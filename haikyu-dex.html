@@ -1,0 +1,1095 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>하이큐 픽셀 백과</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff4e6;--panel:#ffffff;--ink:#1a1a1a;--muted:#6b5a4a;--accent:#f28c28;--accent2:#1a1a1a;--line:#1a1a1a;--shadow:#1a1a1a;--chip:#ffe0bf}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#121212;--panel:#1e1e1e;--ink:#f5f0e8;--muted:#b8a898;--accent:#f28c28;--accent2:#f28c28;--line:#f28c28;--shadow:#000;--chip:#3a2a1a}}
+:root[data-theme="dark"]{--bg:#121212;--panel:#1e1e1e;--ink:#f5f0e8;--muted:#b8a898;--accent:#f28c28;--accent2:#f28c28;--line:#f28c28;--shadow:#000;--chip:#3a2a1a}
+*{box-sizing:border-box}
+html,body{margin:0;overflow-x:hidden}
+body{background:var(--bg);color:var(--ink);font-family:'DotGothic16',monospace;line-height:1.6}
+.px{font-family:'Press Start 2P',monospace}
+.wrap{max-width:1180px;margin:0 auto;padding:0 16px}
+.box{background:var(--panel);border:4px solid var(--line);box-shadow:6px 6px 0 var(--shadow)}
+header{background:var(--accent);border-bottom:6px solid #1a1a1a;padding:24px 0;color:#1a1a1a}
+.banner{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.banner svg{width:72px;height:72px;image-rendering:pixelated;flex:none}
+.banner h1{margin:0;font-family:'Press Start 2P';font-size:clamp(16px,4vw,30px);text-shadow:3px 3px 0 #fff}
+.banner p{margin:4px 0 0}
+.tbtn{margin-left:auto;display:flex;gap:8px}
+button{font-family:inherit;font-size:14px;cursor:pointer;color:var(--ink);background:var(--panel);border:3px solid var(--line);box-shadow:3px 3px 0 var(--shadow);padding:6px 10px}
+button:active{transform:translate(3px,3px);box-shadow:none}
+button.on{background:var(--accent);color:#1a1a1a}
+header button{background:#fff;color:#1a1a1a;border-color:#1a1a1a;box-shadow:3px 3px 0 #1a1a1a}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:20px 0 12px}
+.ctrl{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+input,select{font-family:inherit;font-size:15px;padding:6px 10px;border:3px solid var(--line);background:var(--panel);color:var(--ink);min-width:0}
+input{flex:1 1 220px}
+.teaminfo{padding:16px;margin-bottom:20px;border-left-width:16px}
+.teaminfo h2{margin:0 0 6px;font-size:22px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px;margin-bottom:40px}
+.card{padding:10px;cursor:pointer;text-align:center;border-top-width:10px;transition:transform .1s}
+.card:hover{transform:translate(-2px,-2px);box-shadow:8px 8px 0 var(--shadow)}
+.card canvas{width:96px;height:96px;image-rendering:pixelated;background:var(--chip);border:3px solid var(--line)}
+.card .num{font-family:'Press Start 2P';font-size:11px;color:var(--accent)}
+.card .nm{font-size:16px;margin:2px 0}
+.chip{display:inline-block;background:var(--chip);border:2px solid var(--line);padding:0 6px;font-size:12px}
+.count{color:var(--muted);margin-bottom:8px}
+dialog{border:none;padding:0;background:transparent;max-width:min(760px,calc(100vw - 32px));width:100%}
+dialog::backdrop{background:rgba(0,0,0,.7)}
+.modal{padding:20px;max-height:88vh;overflow:auto}
+.mtop{display:flex;gap:20px;flex-wrap:wrap}
+.mtop canvas{width:192px;height:192px;image-rendering:pixelated;background:var(--chip);border:4px solid var(--line);flex:none}
+.mtop .info{flex:1 1 260px;min-width:0}
+.mtop h2{margin:0;font-size:24px}
+table{border-collapse:collapse;width:100%;margin-top:8px}
+td{border:2px solid var(--line);padding:3px 8px;font-size:14px}
+td:first-child{background:var(--chip);width:90px}
+h3{font-family:'Press Start 2P';font-size:12px;margin:18px 0 8px;color:var(--accent)}
+.stat{display:grid;grid-template-columns:70px 1fr 20px;gap:8px;align-items:center;margin:4px 0}
+.bar{display:flex;gap:3px}
+.bar i{flex:1;height:14px;border:2px solid var(--line);background:transparent}
+.bar i.f{background:var(--accent)}
+.hex{display:block;margin:0 auto;width:220px;height:200px;image-rendering:pixelated}
+.statwrap{display:flex;flex-wrap:wrap;gap:16px;align-items:center}
+.statwrap>div{flex:1 1 240px}
+blockquote{margin:0;padding:10px 14px;border:3px dashed var(--accent);font-size:17px}
+.close{float:right}
+footer{text-align:center;color:var(--muted);padding:20px 0 40px;font-size:13px}
+</style>
+</head>
+<body>
+<header><div class="wrap banner">
+<svg viewBox="0 0 16 16" shape-rendering="crispEdges" aria-hidden="true">
+<g fill="#1a1a1a"><rect x="5" y="0" width="6" height="1"/><rect x="3" y="1" width="2" height="1"/><rect x="11" y="1" width="2" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="13" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="2"/><rect x="14" y="3" width="1" height="2"/><rect x="0" y="5" width="1" height="6"/><rect x="15" y="5" width="1" height="6"/><rect x="1" y="11" width="1" height="2"/><rect x="14" y="11" width="1" height="2"/><rect x="2" y="13" width="1" height="1"/><rect x="13" y="13" width="1" height="1"/><rect x="3" y="14" width="2" height="1"/><rect x="11" y="14" width="2" height="1"/><rect x="5" y="15" width="6" height="1"/></g>
+<rect x="5" y="1" width="6" height="14" fill="#fff"/><rect x="3" y="2" width="10" height="12" fill="#fff"/><rect x="1" y="5" width="14" height="6" fill="#fff"/><rect x="2" y="3" width="12" height="10" fill="#fff"/>
+<g fill="#1f4fa8"><rect x="2" y="4" width="4" height="2"/><rect x="5" y="6" width="3" height="2"/><rect x="7" y="8" width="2" height="5"/><rect x="6" y="12" width="2" height="2"/></g>
+<g fill="#f2c200"><rect x="9" y="2" width="3" height="2"/><rect x="10" y="4" width="3" height="3"/><rect x="11" y="7" width="3" height="3"/><rect x="1" y="7" width="4" height="2"/><rect x="3" y="9" width="3" height="3"/></g>
+</svg>
+<div><h1>HAIKYU!! DEX</h1><p>하이큐!! 픽셀 캐릭터 백과사전</p></div>
+<div class="tbtn"><button id="rand">? 랜덤</button><button id="theme" aria-label="테마 전환">◐</button></div>
+</div></header>
+<main class="wrap">
+<nav class="tabs" id="tabs"></nav>
+<div class="ctrl"><input id="q" type="search" placeholder="이름·포지션·별명 검색"><select id="pos"></select></div>
+<section id="teaminfo"></section>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+</main>
+<footer>팬 메이드 비공식 백과 · 픽셀 스프라이트</footer>
+<dialog id="dlg"><div class="box modal" id="mbody"></div></dialog>
+
+<script>
+window.HQ = window.HQ || []; window.HQ.push({ id:'karasuno', team:'카라스노 고교', colors:{main:'#1a1a1a',sub:'#f28c28'}, motto:'날지 못하는 까마귀의 부활 — 추락한 강호, 다시 전국으로!', chars:[
+{ id:'hinata', name:'히나타 쇼요', jp:'日向翔陽', position:'미들 블로커', number:'10', grade:'1학년', height:'162.8cm', birthday:'6월 21일', voice:'村瀬歩', stats:{power:2,jump:5,stamina:5,strategy:1,technique:1,speed:5}, nickname:'꼬마 거인 후계자, 미끼', intro:'작은 키를 압도적인 점프력과 스피드로 극복하는 열혈 미들 블로커. 단순하고 긍정적이며 누구보다 코트에 오래 서 있고 싶어한다. 카게야마와의 변인 속공으로 상대 블로커를 농락한다.', skills:['변인 속공','최강의 미끼','브로드 공격'], quote:'내가 있으면 넌 최강이야!', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#f07a1a','H':'#b8520c','L':'#ffb060','s':'#f6cfa8','S':'#d9a47c','e':'#3a2010','w':'#ffffff','m':'#c0504a','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'...oho..oho..oho..oho...',
+'..ohho.ohhhoohhhooohhoo.',
+'.ohhhhohhhhhhhhhhhohhhho',
+'.ohhhhhhLLLhhhhhhhhhhhho',
+'ohhhhhhLLhhhhhhhhhhhhHhh',
+'hhhhhhhhhhhhhhhhhhhhHHhh',
+'ohhhhhhhhhhhhhhhhhhhHHho',
+'.ohhhhshhhhsshhhhshhHho.',
+'..ohhssssssssssssssSHho.',
+'...ossseeessssseeessSSo.',
+'...osssewessssewessSSo..',
+'...osssssssSsssssssSSo..',
+'...ossSssssssssssSsSSo..',
+'....ossssmmmmmsssSSoo...',
+'.....osssswmmwssSSo.....',
+'......osssssssSSoo......',
+'.......oossssSoo........',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuunuunnnuuuuUno.',
+'onuuuuuuunnuununuuuuuUno',
+'onuuuuuuuunuununuuuuuUno',
+'onuuuuuuunnnunnnuuuuuUno']}},
+{ id:'kageyama', name:'카게야마 토비오', jp:'影山飛雄', position:'세터', number:'9', grade:'1학년', height:'180.6cm', birthday:'12월 22일', voice:'石川界人', stats:{power:4,jump:4,stamina:4,strategy:4,technique:5,speed:4}, nickname:'코트 위의 왕', intro:'천재적인 토스 정밀도와 강력한 서브를 지닌 세터. 중학교 시절 독선적인 플레이로 "왕"이라 불렸지만 카라스노에서 동료를 신뢰하는 법을 배운다. 배구 외에는 서툴고 무뚝뚝하다.', skills:['정밀 토스','점프 서브','세트 덤프'], quote:'토스 올라간 곳에 네가 있으면 돼.', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#16161e','H':'#08080c','L':'#3a3c52','s':'#f3d0ae','S':'#d6a882','i':'#2a4a80','m':'#8a3a3a','u':'#22222a','U':'#0e0e12','n':'#f28c28','w':'#ffffff'}, rows:[
+'........oooooooo........',
+'......oohhhhhhhhoo......',
+'.....ohhhhhhhhhhhho.....',
+'....ohhhhLLhhhhhhhhoo...',
+'...ohhhLLhhhhhhhhhhHho..',
+'...ohhhhhhhhhhhhhhhHHho.',
+'...ohhhhhhhhhhhhhhhhHho.',
+'...ohhshhhshhhhshhhhHho.',
+'...ohsssssssssssssssHho.',
+'...ohsHHHHssssHHHHssSho.',
+'...ohssiHHsssssiHHssSho.',
+'...ohsssssssSssssssSSho.',
+'....ossssssssssssssSSo..',
+'....osssssmmmmsssssSo...',
+'.....osssssssssssSSo....',
+'......osssssssssSSo.....',
+'.......oosssssSooo......',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuunnnuuuuuuUno.',
+'onuuuuuuuuunnnuuuuuuuUno',
+'onuuuuuuuuuuunuuuuuuuUno',
+'onuuuuuuuuuunnuuuuuuuUno']}},
+{ id:'tsukishima', name:'츠키시마 케이', jp:'月島蛍', position:'미들 블로커', number:'11', grade:'1학년', height:'188.3cm', birthday:'9월 27일', voice:'内山昂輝', stats:{power:3,jump:4,stamina:2,strategy:5,technique:4,speed:3}, nickname:'츳키', intro:'냉소적이고 비꼬는 말투의 장신 미들 블로커. 처음엔 배구를 "그냥 동아리"로 여겼지만 점차 블로킹의 재미에 눈뜬다. 냉정한 분석으로 상대 에이스를 끈질기게 막는 리드 블로킹이 주무기.', skills:['리드 블로킹','킬 블록','분석'], quote:'고작 동아리 활동인데 왜 그렇게까지 해?', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#e8d27a','H':'#b89a40','L':'#fff2b0','s':'#f6dcc2','S':'#d8b494','e':'#4a3a20','G':'#cfe4ef','u':'#22222a','U':'#0e0e12','n':'#f28c28','w':'#ffffff'}, rows:[
+'.........oooooo.........',
+'.......oohhhhhhoo.......',
+'......ohhhhLLhhhhoo.....',
+'.....ohhhhLLhhhhhhho....',
+'....ohhhhhhhhhhhhhHho...',
+'....ohhhhhhhhhhhhhHHho..',
+'....ohhhshhhhshhhhhHho..',
+'....ohhssshhsssshhhHho..',
+'....ohssssssssssssSHho..',
+'....ohsseessssseessSho..',
+'...oooooooooooooooooooo.',
+'....ooGeGossssoGeGoSso..',
+'....osssssssSssssssSSo..',
+'.....ossssssssssssSSo...',
+'.....osssssssSSSSsSSo...',
+'......osssssssssSSoo....',
+'.......oossssssSoo......',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuunuuunuuuuuUno.',
+'onuuuuuuunnuunnuuuuuuUno',
+'onuuuuuuuunuuunuuuuuuUno',
+'onuuuuuuunnnunnnuuuuuUno']}},
+{ id:'yamaguchi', name:'야마구치 타다시', jp:'山口忠', position:'미들 블로커', number:'12', grade:'1학년', height:'179.5cm', birthday:'11월 10일', voice:'斉藤壮馬', stats:{power:2,jump:3,stamina:3,strategy:3,technique:3,speed:3}, nickname:'핀치 서버', intro:'츠키시마의 소꿉친구로 주근깨가 특징이다. 열등감을 딛고 점프 플로터 서브를 연마해 결정적 순간의 핀치 서버로 활약한다. 소심하지만 마음먹으면 누구보다 강하다.', skills:['점프 플로터 서브','핀치 서버'], quote:'이번엔 도망치지 않을 거야.', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#3e3a24','H':'#24200f','L':'#6a6440','s':'#f2cba6','S':'#d4a47e','e':'#3a2a10','f':'#b87050','w':'#ffffff','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'...........oho..........',
+'..........ohho..........',
+'........oohhooo.........',
+'......oohhhhhhhoo.......',
+'.....ohhhLLhhhhhhoo.....',
+'....ohhhLhhhhhhhhhho....',
+'...ohhhhhhhhhhhhhhHho...',
+'...ohhhhhhhhhhhhhhHHho..',
+'...ohhsshhhssshhhshHho..',
+'...ohssssssssssssssSho..',
+'...ohsseesssssseessSho..',
+'...ohssewssssssewssSSo..',
+'...osfsfssssSssfsfsSSo..',
+'....ossssssssssssSSoo...',
+'.....osssssffssssSSo....',
+'......osssssssssSSo.....',
+'.......oossssSoooo......',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuunuunnnuuuuUno.',
+'onuuuuuuunnuuuunuuuuuUno',
+'onuuuuuuuunuunnuuuuuuUno',
+'onuuuuuuunnnunnnuuuuuUno']}},
+{ id:'sawamura', name:'사와무라 다이치', jp:'澤村大地', position:'윙 스파이커', number:'1', grade:'3학년 / 주장', height:'176.8cm', birthday:'12월 31일', voice:'日野聡', stats:{power:3,jump:3,stamina:4,strategy:4,technique:4,speed:3}, nickname:'주장', intro:'카라스노의 든든한 주장으로 팀의 정신적 기둥. 평소엔 온화하지만 화나면 무섭다. 안정된 리시브로 수비의 토대를 지탱한다.', skills:['안정 리시브','디그','팀 통솔'], quote:'우리는 다시 날아오른다.', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#1c1a18','H':'#0c0a08','L':'#4a4440','s':'#e6bc92','S':'#c4946a','e':'#2a1a10','m':'#a04a40','w':'#ffffff','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'........................',
+'.......oooooooooo.......',
+'......ohhhhhhhhhhoo.....',
+'.....ohhhLLhhhhhhhho....',
+'....ohhhhhhhhhhhhhhHo...',
+'....ohhhhhhhhhhhhhhHho..',
+'....ohhssssssssssssHho..',
+'...oshsssssssssssssSso..',
+'...osseeeessssseeeesSSo.',
+'...osssseessssseessSSSo.',
+'...osssssssssssssssSSSo.',
+'...ossssssssSSsssssSSSo.',
+'...osssssssssssssssSSSo.',
+'....osssswmmmmwssssSSo..',
+'....osssssmmmmsssssSo...',
+'.....ossssssssssSSSo....',
+'......oossssssSSooo.....',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuuunuuuuuuuUno.',
+'onuuuuuuuuunnuuuuuuuuUno',
+'onuuuuuuuuuunuuuuuuuuUno',
+'onuuuuuuuuunnnuuuuuuuUno']}},
+{ id:'sugawara', name:'스가와라 코우시', jp:'菅原孝支', position:'세터', number:'2', grade:'3학년 / 부주장', height:'174.3cm', birthday:'6월 13일', voice:'入野自由', stats:{power:2,jump:3,stamina:3,strategy:5,technique:4,speed:3}, nickname:'스가', intro:'은발과 눈가 점이 특징인 부드러운 성격의 세터. 카게야마에게 정세터 자리를 내줬지만 팀을 위해 기꺼이 벤치에서 응원한다. 동료를 살리는 안정적 토스와 판단력이 강점.', skills:['안정 토스','시차 공격 지휘','분위기 메이커'], quote:'내가 들어가서 흐름을 바꿔줄게.', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#c8c8d4','H':'#8e8ea0','L':'#f2f2fa','s':'#f6dcc0','S':'#d8b494','e':'#6a5040','m':'#c0706a','w':'#ffffff','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'.........oooooo.........',
+'.......oohhhhhhoo.......',
+'......ohhhLLhhhhhoo.....',
+'.....ohhLLLhhhhhhhhoo...',
+'....ohhhhhhhhhhhhhhhho..',
+'...ohhhhhhhhhhhhhhhHHho.',
+'...ohhhhhhhohhhhhhhHHho.',
+'...ohhhhhsoosshhhhhhHho.',
+'...ohhhssssssssshhhhHho.',
+'...ohhsssssssssssshHho..',
+'...ohsseeessssseeessho..',
+'...ohssseessssseessSho..',
+'...ohssssessSsssssSSo...',
+'....ossssssssssssSSo....',
+'.....ossssmmmmsssSo.....',
+'......ossssmmsssSSo.....',
+'.......oossssSSooo......',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuunnnuuuuuuUno.',
+'onuuuuuuuuuuunuuuuuuuUno',
+'onuuuuuuuuunnuuuuuuuuUno',
+'onuuuuuuuuunnnuuuuuuuUno']}},
+{ id:'azumane', name:'아즈마네 아사히', jp:'東峰旭', position:'윙 스파이커', number:'3', grade:'3학년', height:'184.7cm', birthday:'1월 1일', voice:'細谷佳正', stats:{power:5,jump:4,stamina:4,strategy:3,technique:4,speed:3}, nickname:'에이스', intro:'긴 머리 묶음과 수염 탓에 험상궂어 보이지만 실은 마음 여린 카라스노의 에이스. 블록에 막힌 트라우마를 극복하고 돌아왔다. 강력한 스파이크로 어떤 벽도 뚫어낸다.', skills:['파워 스파이크','점프 서브','백어택'], quote:'한 번 더, 나한테 토스를 줘!', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#3a2a1c','H':'#22160c','L':'#6a5038','s':'#e8c098','S':'#c49470','e':'#2a1a10','m':'#7a4a30','w':'#ffffff','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'..........ohhho.........',
+'.........ohhHhho........',
+'........ooohhhooo.......',
+'.......ohhhhhhhhhoo.....',
+'......ohhLLhhhhhhhho....',
+'.....ohhLhhhhhhhhhhho...',
+'....ohhhhhhhhhhhhhhHho..',
+'....ohhhhhhssshhhhhHHho.',
+'....ohhhssssssssshhhHho.',
+'....ohhsssssssssssshHho.',
+'....ohseessssssseesshho.',
+'....ohssweesssseewssSho.',
+'....ohsssssssSssssssSho.',
+'.....ossssssssssssSSoo..',
+'.....osHHsHmmmHsHHSSo...',
+'......osHHHHHHHHHHSo....',
+'.......ooHHHHHHSooo.....',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuunnnuuuuuuUno.',
+'onuuuuuuuuuunnuuuuuuuUno',
+'onuuuuuuuuuuunuuuuuuuUno',
+'onuuuuuuuuunnnuuuuuuuUno']}},
+{ id:'nishinoya', name:'니시노야 유', jp:'西谷夕', position:'리베로', number:'4', grade:'2학년', height:'159.3cm', birthday:'10월 10일', voice:'岡本信彦', stats:{power:2,jump:3,stamina:5,strategy:3,technique:5,speed:5}, nickname:'수호신', intro:'세운 머리와 금색 앞머리가 트레이드마크인 열혈 리베로. 작지만 뛰어난 반사신경으로 어떤 공도 걷어 올린다. 늘 활기차고 팀의 사기를 끌어올린다.', skills:['롤링 썬더','리베로 토스','디그'], quote:'뒤는 나한테 맡기고 앞만 봐!', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#141414','y':'#f0d040','s':'#f3cca6','S':'#d4a47e','e':'#2a1a10','m':'#b04040','w':'#ffffff','u':'#f28c28','U':'#c06818','n':'#1a1a1a'}, rows:[
+'.........ohooho.o.......',
+'........ohhohhhoho......',
+'......oohhhhhhhhhhoo....',
+'.....ohohhhhhhhhhhoho...',
+'.....ohhhhhhyyhhhhhho...',
+'......ohhhhyyyyhhhhoo...',
+'.....ohhhhhhyyyhhhhoho..',
+'.....ohhhhhyyyyhhhhooo..',
+'.....ohhhhhhyyshhhhoho..',
+'......ohssssssssssSho...',
+'......oseeesssseeeSSo...',
+'......osewesssseweSSo...',
+'......osssssSsssssSSo...',
+'.......osswmmmmwsSSo....',
+'.......ossmmmmmmsSo.....',
+'........osssssSSoo......',
+'.........ossssSo........',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuununuuuuuuUno.',
+'onuuuuuuuuunnnuuuuuuuUno',
+'onuuuuuuuuuuunuuuuuuuUno',
+'onuuuuuuuuuuunuuuuuuuUno']}},
+{ id:'tanaka', name:'타나카 류노스케', jp:'田中龍之介', position:'윙 스파이커', number:'5', grade:'2학년', height:'177.2cm', birthday:'3월 3일', voice:'林勇', stats:{power:4,jump:3,stamina:4,strategy:2,technique:3,speed:3}, nickname:'타나카 선배', intro:'까까머리에 거친 겉모습이지만 의리 있고 후배를 잘 챙기는 분위기 메이커. 강한 멘탈로 막혀도 다시 공을 요구한다. 크로스 스파이크와 기세로 팀의 흐름을 바꾼다.', skills:['이너 크로스','강타','멘탈 회복'], quote:'평범하다고? 그게 어쨌다는 거냐!', sprite:{ palette:{'.':'transparent','o':'#120e0c','h':'#8a8478','H':'#6a6458','L':'#b0aa9c','s':'#e8c098','S':'#c4946a','e':'#1a1008','m':'#8a2a2a','w':'#ffffff','u':'#22222a','U':'#0e0e12','n':'#f28c28'}, rows:[
+'........................',
+'........................',
+'........oooooooo........',
+'......oohhhhhhhhoo......',
+'.....ohhhLLhhhhhhho.....',
+'....ohhhLhhhhhhhhhHo....',
+'....ohhhhhhhhhhhhhHHo...',
+'....ohsssssssssssssHo...',
+'...osseeessssssseeesSo..',
+'...ossseeesssssseeeSSo..',
+'...osssswesssssewsSSSo..',
+'...ossssssssSssssssSSo..',
+'....osssssssSssssssSo...',
+'....oswwwwwwwwwwwsSSo...',
+'.....osmmmmmmmmmmsSo....',
+'......osssssssssSSo.....',
+'.......oossssSoooo......',
+'.....ooooossSSooooo.....',
+'...oouuuuunwwnuuuUUoo...',
+'..onuuuuuuunnuuuuuuUno..',
+'.onuuuuuuuunnnuuuuuuUno.',
+'onuuuuuuuuunnuuuuuuuuUno',
+'onuuuuuuuuuuunuuuuuuuUno',
+'onuuuuuuuuunnuuuuuuuuUno']}}
+] });
+
+</script>
+<script>
+window.HQ = window.HQ || []; window.HQ.push({ id:'nekoma', team:'네코마 고교', colors:{main:'#C8102E',sub:'#1A1A1A'}, motto:'"우리는 혈액이다" - 끈질긴 수비와 연결의 팀', chars:[
+{ id:'kuroo', name:'쿠로오 테츠로', jp:'黒尾 鉄朗', position:'미들 블로커', number:'1', grade:'3학년 / 주장', height:'187.7cm', birthday:'11월 17일', voice:'나카무라 유이치', stats:{power:4,jump:4,stamina:4,strategy:5,technique:4,speed:3}, nickname:'닭벼슬 머리', intro:'네코마의 주장이자 수비 블록의 사령탑. 능글맞고 도발적인 성격이지만 팀을 냉정하게 이끌며, 츠키시마에게 블로킹을 가르치기도 했다.', skills:['리드 블록','상대 공격 유도 블로킹','시간차 공격'], quote:'블로킹은 상대와의 수 싸움이야.', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#1c1c24","H":"#4a4a5a","d":"#0a0a10","s":"#f2c9a0","S":"#d9a47c","e":"#3a2418","w":"#ffffff","m":"#9a3a3a","r":"#c8102e","R":"#8a0a1e"}, rows:[
+"...........oo...........",
+".....oo...ohho....oo....",
+"....ohho.ohhhho..ohho...",
+"....ohhhohhHhhhoohhhho..",
+"...ohhhhhhHHhhhhhhhhhho.",
+"...ohhhhhhhhhhhhhhhhhhho",
+"...ohhdhhhhhhhhhhhhhhhho",
+"...ohdsshhhhhhhhhhhdhhho",
+"...odssssshhhhhhhhhsdhho",
+"....osooossssooodhhsdho.",
+"....osewsssssewssdhhso..",
+"....osssssssssssssdhSo..",
+"....oSsssssSssssssSSo...",
+".....osssssssssmmmSo....",
+".....oSssssmmmmmsSo.....",
+"......oSSsssssssSo......",
+".......ooSSSSSSoo.......",
+".........oSSSSo.........",
+"...orrrrrwSSSSwrrrrro...",
+"..oRrrrrroooooorrrrrRo..",
+".oRrrrrrrrrrrrrrwrrrrRo.",
+"oRrrrrrrrrrrrrrwwrrrrrRo",
+"oRrrrrrrrrrrrrrrwrrrrrRo",
+"oRrrrrrrrrrrrrrrrrrrrrRo"]}},
+{ id:'kenma', name:'코즈메 켄마', jp:'孤爪 研磨', position:'세터', number:'5', grade:'2학년', height:'169.2cm', birthday:'10월 16일', voice:'카지 유우키', stats:{power:2,jump:2,stamina:1,strategy:5,technique:4,speed:2}, nickname:'네코마의 뇌', intro:'게임을 좋아하는 내성적인 세터로 체력은 약하지만 뛰어난 관찰력으로 상대를 분석한다. 히나타와의 대결을 통해 배구의 재미를 깨닫는다.', skills:['상대 분석과 전술 지휘','페인트','속공 토스'], quote:'게임처럼 공략하면 돼.', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#e8c050","H":"#fbe590","d":"#4a3420","s":"#f7dcbc","S":"#dcb490","e":"#b08a10","w":"#ffffff","m":"#9a3a3a","r":"#c8102e","R":"#8a0a1e"}, rows:[
+"........oooooooo........",
+"......oddddddddddo......",
+".....odddddddddddddo....",
+"....oddddhhhhhhhdddddo..",
+"....ohhhhhhhhhhhhhhhhho.",
+"...ohhhhhhhhhhhhhhhhhhho",
+"...ohhhHhhhhhhhhhhHhhhho",
+"...ohhhhhhshhhhshhhhhhho",
+"...ohhhssssssssssssshhho",
+"...ohhsooosssssooosshho.",
+"...ohhseewssssseewsshho.",
+"...ohhssssssssssssssshho",
+"...ohhSsssssSssssssShho.",
+"...ohhhSsssssssssssShhho",
+"...ohhhoSssoooosssSohhho",
+"...ohhho.oSSSSSSSo.ohhho",
+"....ooo...ooooooo...ooo.",
+".........oSSSSSo........",
+"...orrrrrwSSSSSwrrrro...",
+"..oRrrrrroooooorrrrrRo..",
+".oRrrrrrrrrrrrrwwrrrrRo.",
+"oRrrrrrrrrrrrrrwrrrrrrRo",
+"oRrrrrrrrrrrrrrrwrrrrrRo",
+"oRrrrrrrrrrrrrrrrrrrrrRo"]}},
+{ id:'yaku', name:'야쿠 모리스케', jp:'夜久 衛輔', position:'리베로', number:'3', grade:'3학년', height:'165.2cm', birthday:'8월 8일', voice:'타치바나 신노스케', stats:{power:2,jump:3,stamina:4,strategy:4,technique:5,speed:5}, nickname:'수호신', intro:'전국 수준의 리시브 실력을 가진 네코마의 리베로. 엄격하지만 후배를 잘 챙기며, 특히 레프에게 리시브를 혹독하게 가르친다.', skills:['정확한 리시브','디그','플라잉 수비'], quote:'공은 바닥에 떨어뜨리지 않아.', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#a8743c","H":"#d4a46c","d":"#6e4620","s":"#f2c9a0","S":"#d9a47c","e":"#4a2c14","w":"#ffffff","m":"#9a3a3a","r":"#1a1a1a","R":"#000000"}, rows:[
+"........................",
+"........................",
+".........oooooooo.......",
+".......ooHHhhhhhhoo.....",
+"......ohHhhhhhhhhhho....",
+".....ohhhhhhhhhhhhhho...",
+".....ohhhhhhhhdhhhhhho..",
+".....ohhhhhhhdsdhhhhho..",
+".....ohhdsssssssssdhho..",
+".....ohsoosssssssoosho..",
+".....ohseewsssssseewso..",
+".....osseeesssssseeeso..",
+"......oSssssssssssssSo..",
+"......oSsssssmmssssSo...",
+".......oSsssmmmmssSo....",
+"........oSSssssSSo......",
+".........oooooooo.......",
+".........oSSSSo.........",
+"...orrrrrwoooowrrrrro...",
+"..oRwrrrrrrrrrrrrrrwRo..",
+".oRwrrwwrrrrrrrrrrrrwRo.",
+"oRwrrrrwrrrrrrrrrrrrrwRo",
+"oRwrrrwwrrrrrrrrrrrrrwRo",
+"oRwrrrrrrrrrrrrrrrrrrwRo"]}},
+{ id:'lev', name:'하이바 레프', jp:'灰羽 リエーフ', position:'미들 블로커', number:'11', grade:'1학년', height:'194.3cm', birthday:'10월 30일', voice:'이시카와 카이토', stats:{power:4,jump:5,stamina:4,strategy:1,technique:1,speed:4}, nickname:'네코마의 에이스(자칭)', intro:'일본인과 러시아인 혼혈의 장신 신입생. 배구 경력은 짧지만 긴 팔다리와 높은 타점으로 성장 중이며, 에이스를 꿈꾸는 자신만만한 성격이다.', skills:['높은 타점의 스파이크','긴 리치를 살린 블로킹'], quote:'내가 네코마의 에이스가 될 거야!', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#c8ccd4","H":"#f0f2f6","d":"#8a909c","s":"#fae6d2","S":"#e0c0a4","e":"#3aa070","w":"#ffffff","m":"#9a3a3a","r":"#c8102e","R":"#8a0a1e"}, rows:[
+".......oo....oo.........",
+"......ohhooooHho........",
+".....ohhhHHhhhhhoo......",
+"....ohhhHhhhhhhhhhho....",
+"...ohhhhhhhhhhhhhhhhho..",
+"...ohhhhhhhhhhhhhhhhhho.",
+"...ohhdhhhhdhhhhdhhhhho.",
+"...ohdsdhhdsdhhdsdhhho..",
+"...ohsssdsssssdsssshho..",
+"...ohsoosssssssoossho...",
+"...ohsewssssssewsssho...",
+"...odseesssssssseesdo...",
+"....osssssSSsssssso.....",
+"....oSssswmmmmwsssSo....",
+".....oSsssmmmmsssSo.....",
+"......oSSssssssSSo......",
+".......oooooooooo.......",
+".........oSSSSSo........",
+"...orrrrrwSSSSSwrrrro...",
+"..oRrrrrroooooorrrrrRo..",
+".oRrrrrrrrrrrrrwrwrrrRo.",
+"oRrrrrrrrrrrrrrwrwrrrrRo",
+"oRrrrrrrrrrrrrrwrwrrrrRo",
+"oRrrrrrrrrrrrrrrrrrrrrRo"]}},
+{ id:'yamamoto', name:'야마모토 타케토라', jp:'山本 猛虎', position:'윙 스파이커', number:'4', grade:'2학년', height:'178.7cm', birthday:'8월 1일', voice:'?', stats:{power:4,jump:3,stamina:4,strategy:2,technique:3,speed:3}, nickname:'?', intro:'모히칸 머리의 열혈 윙 스파이커로 네코마의 공격 핵심. 여자 앞에서는 말을 못 할 정도로 쑥스러움을 타며, 타나카와 라이벌 겸 동지 관계다.', skills:['강력한 스파이크','열정적인 분위기 메이킹'], quote:'기합으로 밀어붙인다!', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#4a2e18","H":"#7a5030","d":"#8a7a6a","s":"#e8b890","S":"#c8926a","e":"#1a1a1a","w":"#ffffff","m":"#9a3a3a","r":"#c8102e","R":"#8a0a1e"}, rows:[
+"...........oooo.........",
+"..........ohhho.........",
+"..........ohHho.........",
+"..........ohHho.........",
+".........ohhhhho........",
+"......oooohhhhhoooo.....",
+".....oddddhhhhhdddddo...",
+".....odddddhhhddddddo...",
+".....odsssssssssssdo....",
+".....osooooossoooooso...",
+".....osswewsssswewsso...",
+".....ossssssssSsssssso..",
+".....oSsssssSSsssssSo...",
+"......oSssmmmmmmssSo....",
+"......oSssmwwwwmssSo....",
+".......oSssmmmmssSo.....",
+"........oooooooooo......",
+".........oSSSSo.........",
+"...orrrrrwSSSSwrrrrro...",
+"..oRrrrrroooooorrrrrRo..",
+".oRrrrrrrrrrrrrwrwrrrRo.",
+"oRrrrrrrrrrrrrrwwwrrrrRo",
+"oRrrrrrrrrrrrrrrrwrrrrRo",
+"oRrrrrrrrrrrrrrrrrrrrrRo"]}},
+{ id:'kai', name:'카이 노부유키', jp:'海 信行', position:'윙 스파이커', number:'2', grade:'3학년 / 부주장', height:'182.2cm', birthday:'4월 7일', voice:'?', stats:{power:3,jump:3,stamina:4,strategy:4,technique:4,speed:3}, nickname:'?', intro:'온화하고 침착한 네코마의 부주장. 공수 모두 안정적인 플레이로 팀의 균형을 잡으며 리시브에서도 큰 역할을 한다.', skills:['안정적인 리시브','차분한 공격'], quote:'침착하게, 하나씩 이어가자.', sprite:{ palette:{".":"transparent","o":"#1e1418","h":"#1a1a1a","H":"#4a4a4a","d":"#000000","s":"#e8b890","S":"#c8926a","e":"#1a1a1a","w":"#ffffff","m":"#9a3a3a","r":"#c8102e","R":"#8a0a1e"}, rows:[
+"........................",
+"........................",
+".........oooooooo.......",
+".......oohhhhhhhhoo.....",
+"......ohhhhhhhhhhhho....",
+".....ohhhHhhhhhhhhhho...",
+".....ohhhhhhhhhhhhhhho..",
+".....ohhhhhhhhhhhhhhho..",
+".....ohsssssssssssssho..",
+".....osssssssssssssso...",
+".....ossooossssoooosso..",
+".....osssssssssssssso...",
+".....oSssssssSsssssSo...",
+".....oSssssssssssssSo...",
+"......oSsssommossSo.....",
+".......oSsssssssSo......",
+"........ooooooooo.......",
+".........oSSSSSo........",
+"...orrrrrwSSSSSwrrrro...",
+"..oRrrrrroooooorrrrrRo..",
+".oRrrrrrrrrrrrrwwrrrrRo.",
+"oRrrrrrrrrrrrrrrwrrrrrRo",
+"oRrrrrrrrrrrrrrwrrrrrrRo",
+"oRrrrrrrrrrrrrrrrrrrrrRo"]}}
+]});
+
+</script>
+<script>
+window.HQ = window.HQ || [];
+(function(){
+window.HQ.push({ id:'aobajohsai', team:'아오바죠사이 고교', colors:{main:'#3fbfb0',sub:'#ffffff'}, motto:'개인 능력이 고른 미야기 현 최강급 강호, 오이카와가 이끄는 6명의 조화', chars:[
+{id:'oikawa',name:'오이카와 토오루',jp:'及川徹',position:'세터',number:'1',grade:'3학년 / 주장',height:'184.3cm',birthday:'7월 20일',voice:'나니와 히로시',stats:{power:4,jump:4,stamina:4,strategy:5,technique:5,speed:4},nickname:'대왕님',intro:'아오바죠사이의 주장이자 세터. 경박해 보이지만 누구보다 노력하는 타입으로, 동료의 실력을 100% 끌어내는 토스가 강점이다.',skills:['점프 서브','팀원 최적화 토스','세트 덤프'],quote:'재능은 꽃피우는 것, 센스는 갈고닦는 것이다.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f6d3b3","S":"#d9a98a","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#9a6440","H":"#c99068","d":"#6a3f26","e":"#5a2e1a","m":"#a8433c"},"rows":[".......oohhhohhhoo......","......ohhHHhhhHhhho.....",".....ohhHhhhhHHhhhho....",".....ohhhhhhhhhhhho.....","....ohhhhhhhhhhhhhho....","....ohhhhhhhhhhhhhho....","...ohhhhhhhhhhhhhhhho...","....ohhhhhhhhhhhhhho....","....ohhdhhhhhhhhhhho....","....ohhdsssssssshhho....","....ohdsddssddssshho....","....ohhsssssssssshho....","....odhseesseessshho....","....ohhowessSessoodo....","....ohooSSSSSSSSo.o.....",".....o.oSSSmmmSSo.......","........oSSSmSSo........",".......oooSSSSooo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwwwttwwwwwwwWo..",".oWwwwwwwwwwtwwwwwwwwWo.",".otttwwwwwwwtwwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'iwaizumi',name:'이와이즈미 하지메',jp:'岩泉一',position:'윙 스파이커',number:'4',grade:'3학년 / 부주장',height:'179.3cm',birthday:'6월 10일',voice:'호리에 슌',stats:{power:5,jump:4,stamina:4,strategy:3,technique:4,speed:4},nickname:'이와쨩',intro:'오이카와의 소꿉친구이자 팀의 에이스. 강직하고 믿음직한 성격으로 오이카와를 바로잡는 역할도 한다.',skills:['파워 스파이크','안정된 리시브'],quote:'에이스라면 기대에 답하는 게 당연하다.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#e6b48e","S":"#c08866","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#1e1e22","H":"#4a4e5a","d":"#0d0d10","e":"#2a2016","m":"#8a3a30"},"rows":["......ohoohoohooho......",".....ohhohhhohhohho.....","....ohhHhhhhHhhhhho.....","....ohhhhhhhhhhhhhho....","....ohhhhhhhHhhhhhho....","....ohdhhhhhhhhhhdho....","....ohdodssdssdsodho....",".....oossssssssssoo.....","......odddssdddsso......",".....osssssssssssso.....",".....oSseesseesssSo.....",".....osseesseesssso.....","......osssssSsssso......","......osssssssssso......","......oSssmmmmssSo......",".......oSSSSSSSSo.......","........oSSSSSSo........",".......oooSSSSooo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwwwtwtwwwwwwWo..",".oWwwwwwwwwtttwwwwwwwWo.",".otttwwwwwwwwtwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'matsukawa',name:'마츠카와 잇세이',jp:'松川一静',position:'미들 블로커',number:'2',grade:'3학년',height:'187.7cm',birthday:'3월 1일',voice:'?',stats:{power:4,jump:4,stamina:4,strategy:4,technique:4,speed:3},nickname:'?',intro:'느긋하고 장난기 많은 3학년 미들 블로커. 침착한 판단으로 블로킹 라인을 지킨다.',skills:['리드 블록','속공'],quote:'서두르지 말고 한 개씩 막자.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f0c8a6","S":"#cc9e80","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#2c2420","H":"#58483c","d":"#151010","e":"#3a2a20","m":"#9a5048"},"rows":["......ohohohhohoo.......",".....ohhhhhhhhhhho......","....ohhHhhHhhHhhhho.....","...ohhhhhhhhhhhhhhho....","...ohhdhhdhhdhhdhhho....","...ohdohdsshdsshdhho....","...oho.ossssssssohho....","...ohoossssssssssoho....","....o.oddddsddddsoo.....","......osssssssssso......",".....oSddddsddddsSo.....","......oseessseesso......","......osssssssssso......","......osssssSsssso......",".......osssssssso.......",".......oSSSmmSSSo.......","........oSSSSSSo........",".......ooSSSSSSoo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwwwttwwwwwwwWo..",".oWwwwwwwwwwtwwwwwwwwWo.",".otttwwwwwwttwwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'hanamaki',name:'하나마키 타카히로',jp:'花巻貴大',position:'윙 스파이커',number:'3',grade:'3학년',height:'185.2cm',birthday:'1월 27일',voice:'?',stats:{power:4,jump:4,stamina:4,strategy:3,technique:4,speed:4},nickname:'마키',intro:'마이페이스한 3학년 윙 스파이커. 공수 밸런스가 좋고 페인트 등 잔기술에도 능하다.',skills:['페인트','안정적인 스파이크'],quote:'끝까지 우리 배구를 하자고.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f6d3b3","S":"#d9a98a","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#f2b8c0","H":"#ffdde2","d":"#c8848e","e":"#3a2a28","m":"#a85a50"},"rows":["........................","........oooooooo........","......ooHHhhhhhho.......",".....oHHhhhhhhhhho......",".....ohhhhhhhhhhhho.....",".....ohhhhhhhhhhhho.....",".....ohhhhhhhhhhhho.....",".....odhhhhhhhhhhdo.....",".....odssssssssssdo.....",".....odssddssddssdo.....",".....oSssssssssssSo.....","......ossessssesso......","......ossessSsesso......","......osssssssssso......","......oSSSSSSmmSSo......",".......oSSSSmSSSo.......","........oSSSSSSo........",".......oooSSSSooo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwwwttwwwwwwwWo..",".oWwwwwwwwwttwwwwwwwwWo.",".otttwwwwwwwtwwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'kyotani',name:'쿄타니 켄타로',jp:'京谷賢太郎',position:'윙 스파이커',number:'16',grade:'2학년',height:'181.0cm',birthday:'?',voice:'?',stats:{power:5,jump:4,stamina:5,strategy:1,technique:3,speed:4},nickname:'광견쨩',intro:'협조성이 부족한 2학년 공격수로 \"광견\"이라 불린다. 폭발적인 파워로 흐름을 바꾸는 비장의 카드.',skills:['강타 스파이크','라인샷'],quote:'내가 때리면 그만이다.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f6d3b3","S":"#d9a98a","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#efe08a","H":"#fff6c4","d":"#6b5a30","e":"#4a3010","m":"#7a2a24"},"rows":["......oooooooooooo......",".....ohhhhhhhhhhhho.....","....ohhHHHhhhhHHhhho....","....ohhhhhhhhhhhhhho....","....oohohhhhhhhhohoo....","....oohoossssssoohoo....","....oooossssssssoooo....",".....oossssssssssoo.....","......oddssssssddo......","......osdddssdddso......",".....oSsseesseessSo.....","......osssssssssso......","......osssssSsssso......","......osssssssssso......","......oSsmmmmmmsSo......",".......oSSwmmwSSo.......","........oSSSSSSo........",".......oooSSSSooo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwtwtttwwwwwwWo..",".oWwwwwwwtwtwwwwwwwwwWo.",".otttwwwwtwtttwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'kunimi',name:'쿠니미 아키라',jp:'国見英',position:'윙 스파이커',number:'13',grade:'1학년',height:'182.1cm',birthday:'3월 25일',voice:'?',stats:{power:3,jump:3,stamina:3,strategy:4,technique:4,speed:3},nickname:'?',intro:'에너지 절약형 1학년. 겉보기엔 설렁설렁하지만 경기 후반에 빛나는 냉정한 플레이어다.',skills:['체력 안배','후반 집중 공격'],quote:'힘은 필요할 때 쓰면 돼.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f8dcc2","S":"#ddb398","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#3e2c22","H":"#6a5040","d":"#21160f","e":"#2a1c14","m":"#b06a5a"},"rows":[".........oooooo.........","........ohhhhhho........",".......ohHHHHhhho.......","......oHHHhhhhhhho......",".....ohhhhhhhhhhhho.....",".....ohhhhhhhhhhhho.....","....ohhhhhhhhhhhhhho....","....ohhhhhhhhhhhhhho....","....ohhhhhhhhhhhhhho....","....ohhsdsdssdsdshho....","....ohhseesseessshho....","....ohhsddssddssshho....","....ohhsssssssssshho....","....ohhossssssssohho....","....ohhoSSSmmSSSohho....","....ohhoSSSSSSSSohho....",".....oo.oSSSSSSo.oo.....",".......oooSSSSooo.......",".....ooWwwtwwtwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwtwtttwwwwwwWo..",".oWwwwwwwtwwwtwwwwwwwWo.",".otttwwwwtwtttwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'kindaichi',name:'킨다이치 유타로',jp:'金田一勇太郎',position:'미들 블로커',number:'12',grade:'1학년',height:'189.2cm',birthday:'6월 6일',voice:'?',stats:{power:4,jump:4,stamina:4,strategy:2,technique:3,speed:3},nickname:'락쿄',intro:'카게야마의 중학 시절 동료인 1학년 미들 블로커. 성실하고 열정적인 성격이다.',skills:['속공','블로킹'],quote:'이번엔 반드시 막아낸다!',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f6d3b3","S":"#d9a98a","w":"#f4f8f8","W":"#c6d6d8","t":"#2fae9f","h":"#24242a","H":"#50505e","d":"#0f0f12","e":"#20202a","m":"#8a2a2a"},"rows":[".........ohhho..........","........ohhHhho.........",".......ohhhHhhho........",".......ohhhHhhhho.......","......ohhhhhhhhhho......",".....ohhhhhhhhhhhho.....",".....ohhhhhhhhhhhho.....",".....ohhhhhhhhhhhho.....",".....odhddddddhdho......",".....odssssssssdso......",".....oSsdssssdsssSo.....","......osswsswsssso......","......oseesseessso......","......oseesseessso......","......osssssssssso......",".......osssmmssso.......",".......oSSSmmSSSo.......",".......ooSSSSSSoo.......",".....ooWwwSSSSwwWoo.....","...ooWwwwwwttwwwwwWoo...","..oWwwwwwtwtttwwwwwwWo..",".oWwwwwwwtwwtwwwwwwwwWo.",".otttwwwwtwtttwwwwwttto.",".otttwwwwwwwwwwwwwwttto."]}},
+{id:'watari',name:'와타리 신지',jp:'渡親治',position:'리베로',number:'7',grade:'2학년',height:'172.3cm',birthday:'?',voice:'?',stats:{power:2,jump:3,stamina:4,strategy:3,technique:4,speed:4},nickname:'?',intro:'짧은 머리의 2학년 리베로. 견실한 리시브로 팀의 수비를 받친다.',skills:['리시브','리베로 토스'],quote:'공은 내가 올린다.',sprite:{"palette":{".":"transparent","o":"#1b1420","s":"#f6d3b3","S":"#d9a98a","w":"#f4f8f8","t":"#1f7f78","T":"#155a55","h":"#5a4232","H":"#8a6e58","d":"#3a2a20","e":"#2a1c14","m":"#8a2a2a"},"rows":["........................","........................",".........oooooo.........",".......ooHhHhHhoo.......","......ohHhHhHhhhho......","......ohhhhhhhhhho......",".....ohhhhhhhhhhhho.....",".....ohssssssssssho.....","......osdssssdssso......",".....osssssssssssso.....",".....oSseesseesssSo.....",".....osssssssssssso.....","......osssssssssso......","......osssssssssso......",".......osmmmmmmso.......",".......oSSwwwwSSo.......",".......oSSSSSSSSo.......",".......oooSSSSooo.......",".....ooTtwwwwwwtToo.....","...ooTttttttttttttToo...","..oTtttttttwwwttttttTo..",".oTttttttttttwtttttttTo.",".owwwtttttttwttttttwwwo.",".owwwttttttttttttttwwwo."]}}
+]});
+})();
+
+</script>
+<script>
+window.HQ = window.HQ || []; window.HQ.push({
+ "id": "shiratorizawa",
+ "team": "시라토리자와 학원",
+ "colors": {
+  "main": "#6b3fa0",
+  "sub": "#f5f5f5"
+ },
+ "motto": "압도적 개인 기량으로 정면 돌파하는 미야기의 절대 왕자",
+ "chars": [
+  {
+   "id": "ushijima",
+   "name": "우시지마 와카토시",
+   "jp": "牛島若利",
+   "position": "윙 스파이커 (OH)",
+   "number": "1",
+   "grade": "3학년 / 주장",
+   "height": "189.5cm",
+   "birthday": "8월 13일",
+   "voice": "타케우치 슌스케",
+   "stats": {
+    "power": 5,
+    "jump": 5,
+    "stamina": 5,
+    "strategy": 3,
+    "technique": 4,
+    "speed": 4
+   },
+   "nickname": "우시와카",
+   "intro": "전국 3대 에이스로 꼽히는 시라토리자와의 절대적 에이스. 무뚝뚝하고 직설적이지만 자신의 힘에 대한 확신이 강하다. 왼손잡이 특유의 회전이 걸린 강력한 스파이크로 상대를 압도한다.",
+   "skills": [
+    "왼손 강타 스파이크",
+    "강력한 점프 서브",
+    "고타점 공격"
+   ],
+   "quote": "강한 자가 남고, 약한 자는 사라질 뿐이다.",
+   "sprite": {
+    "palette": {
+     ".": "transparent",
+     "o": "#1b1420",
+     "p": "#6b3fa0",
+     "q": "#4a2774",
+     "W": "#f5f5f5",
+     "e": "#1c1c26",
+     "m": "#8a3f3a",
+     "h": "#6f6d3c",
+     "H": "#4b4a26",
+     "L": "#9a9858",
+     "s": "#e6bc94",
+     "d": "#c49470"
+    },
+    "rows": [
+     "........................",
+     "......oooooooooooo......",
+     ".....ohhLLLLhhhhhho.....",
+     "....ohhLLhhhhhhhhhho....",
+     "....ohhhhhhhhhhhhhho....",
+     "....oHhHhhhHhhhHhhHo....",
+     "....oHssssssssssssHo....",
+     "....oseeeesssseeeeso....",
+     "....osssssssssssssso....",
+     "....ossWeesssseeWsso....",
+     "....osssssssdsssssso....",
+     "....osssssssdsssssso....",
+     "....odssssssssssssdo....",
+     "....odsssmmmmmmsssdo....",
+     "....oddssssssssssddo....",
+     "....ooddddddddddddoo....",
+     "........odssssdo........",
+     ".oqqppppWWddddWWppppqqo.",
+     ".oqppppppWWWWWWppppppqo.",
+     ".oqpppppppWWWWpppppppqo.",
+     ".oqppppppppWWppppppppqo.",
+     ".oqppppppppWWppppppppqo.",
+     ".oqppWpppppWWpppppWppqo.",
+     ".oqppWpppppWWpppppWppqo."
+    ]
+   }
+  },
+  {
+   "id": "tendo",
+   "name": "텐도 사토리",
+   "jp": "天童覚",
+   "position": "미들 블로커",
+   "number": "5",
+   "grade": "3학년",
+   "height": "187.7cm",
+   "birthday": "5월 20일",
+   "voice": "카키하라 테츠야",
+   "stats": {
+    "power": 3,
+    "jump": 4,
+    "stamina": 3,
+    "strategy": 4,
+    "technique": 4,
+    "speed": 4
+   },
+   "nickname": "게스 몬스터",
+   "intro": "\"게스 몬스터\"라 불리는 괴짜 미들 블로커. 데이터보다 직감으로 상대의 공격을 읽고 막아내는 게스 블록이 특기다. 장난스럽고 노래를 흥얼거리지만 승부욕이 매우 강하다.",
+   "skills": [
+    "게스 블록(직감 블록)",
+    "원터치 견제"
+   ],
+   "quote": "내 직감을 믿어봐, 그 공은 여기로 와!",
+   "sprite": {
+    "palette": {
+     ".": "transparent",
+     "o": "#1b1420",
+     "p": "#6b3fa0",
+     "q": "#4a2774",
+     "W": "#f5f5f5",
+     "e": "#1c1c26",
+     "m": "#8a3f3a",
+     "h": "#d8342a",
+     "H": "#9c2019",
+     "L": "#ff7a5c",
+     "s": "#f4d6b8",
+     "d": "#d6ae8c"
+    },
+    "rows": [
+     ".....o.....oo.....o.....",
+     ".....oLo..ohho..oLo.....",
+     ".....ohhoohhhhoohho.....",
+     "....ohhhhLLhhhhhhhho....",
+     "....ohhhhhhhhhhhhhho....",
+     "....oHhhhhhhhhhhhhHo....",
+     "....oHHsssHssHsssHHo....",
+     ".....osssssssssssso.....",
+     ".....osWWWWssWWWWso.....",
+     ".....osWWeWssWeWWso.....",
+     ".....osWWWWssWWWWso.....",
+     ".....ossssssdssssso.....",
+     ".....odmmmmmmmmmmdo.....",
+     ".....odmWWWWWWWWmdo.....",
+     ".....oddmmmmmmmmddo.....",
+     "......ooddddddddoo......",
+     ".........odssdo.........",
+     "....oqpppWWddWWpppqo....",
+     "...oqqppppWWWWppppqqo...",
+     "...oqpppppWWWWpppppqo...",
+     "...oqpppppWppppppppqo...",
+     "...oqpppppWWWWpppppqo...",
+     "...oqppppppppWpppppqo...",
+     "...oqpppppWWWWpppppqo..."
+    ]
+   }
+  },
+  {
+   "id": "shirabu",
+   "name": "시라부 켄지로",
+   "jp": "白布賢二郎",
+   "position": "세터",
+   "number": "10",
+   "grade": "2학년",
+   "height": "174.5cm",
+   "birthday": "4월 23일",
+   "voice": "타나카 코헤이",
+   "stats": {
+    "power": 2,
+    "jump": 3,
+    "stamina": 3,
+    "strategy": 4,
+    "technique": 4,
+    "speed": 3
+   },
+   "nickname": "?",
+   "intro": "우시지마의 공격을 최대한 살리기 위해 시라토리자와에 들어온 정석파 세터. 냉정하고 자존심이 강하며 자기주장을 억누르고 팀 시스템에 충실하다.",
+   "skills": [
+    "에이스 중심의 정확한 토스",
+    "안정적인 경기 운영"
+   ],
+   "quote": "에이스가 가장 치기 좋은 공을 올린다, 그게 내 일이다.",
+   "sprite": {
+    "palette": {
+     ".": "transparent",
+     "o": "#1b1420",
+     "p": "#6b3fa0",
+     "q": "#4a2774",
+     "W": "#f5f5f5",
+     "e": "#1c1c26",
+     "m": "#8a3f3a",
+     "h": "#a67c52",
+     "H": "#77542f",
+     "L": "#d2aa78",
+     "s": "#f2d0b0",
+     "d": "#d0a888"
+    },
+    "rows": [
+     "........................",
+     ".......oooooooooo.......",
+     "......ohhhhhhhhhho......",
+     ".....ohhLLhhhhhhhho.....",
+     "....ohhhLhhhhhhhhhho....",
+     "....ohhhhhhhhhhhhhho....",
+     "....ohhhhhhhhhhhhhho....",
+     "....oHhhhhhhhhhhssHo....",
+     "....oHHhhhhhssssssHo....",
+     "....osHHssssssssssso....",
+     "....ossoooossoooosso....",
+     "....ossWeesssseeWsso....",
+     "....osssssssdsssssso....",
+     "....odssssssssssssdo....",
+     "....odssssmmmmssssdo....",
+     "....ooddssssssssddoo....",
+     "......ooddddddddoo......",
+     "....oqqWWWdssdWWWqqo....",
+     "...oqqqWWWWddWWWWqqqo...",
+     "..oqpppWpppWWWpppppqo...",
+     "..oqppWWpppWpWpppppqo...",
+     "..oqpppWpppWpWpppppqo...",
+     "..oqpppWpppWpWpppppqo...",
+     "..oqppWWWppWWWpppppqo..."
+    ]
+   }
+  },
+  {
+   "id": "goshiki",
+   "name": "고시키 츠토무",
+   "jp": "五色工",
+   "position": "윙 스파이커 (OH)",
+   "number": "8",
+   "grade": "1학년",
+   "height": "181.5cm",
+   "birthday": "8월 22일",
+   "voice": "우치다 유마",
+   "stats": {
+    "power": 4,
+    "jump": 4,
+    "stamina": 4,
+    "strategy": 2,
+    "technique": 3,
+    "speed": 4
+   },
+   "nickname": "차기 에이스",
+   "intro": "우시지마를 넘어서는 에이스가 되겠다고 공언하는 열혈 1학년. 단순하고 칭찬에 약하지만 노력파이며, 날카로운 직선 스파이크가 무기다.",
+   "skills": [
+    "날카로운 직선 스파이크",
+    "강력한 서브"
+   ],
+   "quote": "언젠가 반드시 우시지마 선배를 넘어설 거야!",
+   "sprite": {
+    "palette": {
+     ".": "transparent",
+     "o": "#1b1420",
+     "p": "#6b3fa0",
+     "q": "#4a2774",
+     "W": "#f5f5f5",
+     "e": "#1c1c26",
+     "m": "#8a3f3a",
+     "h": "#1e1c22",
+     "H": "#0e0d12",
+     "L": "#4a4a5c",
+     "s": "#f0caa6",
+     "d": "#cfa27c"
+    },
+    "rows": [
+     "........................",
+     "......oooooooooooo......",
+     ".....ohhhLLLLhhhhho.....",
+     "....ohhhLLhhhhhhhhho....",
+     "...ohhhhhhhhhhhhhhho....",
+     "...ohhhhhhhhhhhhhhho....",
+     "...ohhhhhhhhhhhhhhho....",
+     "...oHHHHHHHHHHHHHHHo....",
+     "....oseesssssssseeso....",
+     "....osseessssseessso....",
+     "....osWWeessseeWWso.....",
+     ".....osWeesssseeWso.....",
+     ".....ossssssdssssso.....",
+     ".....odssssssssssdo.....",
+     ".....odsssmmmmsssdo.....",
+     ".....oddssmWWmssddo.....",
+     "......ooddmmmmddoo......",
+     "...oqpWWodsssdoWWpqo....",
+     "..oqqppWWWWWWWWWppqqo...",
+     "..oqqpppppWWWpppppqqo...",
+     "..oqppppppWpWppppppqo...",
+     "..oqpppppppWWWpppppqo...",
+     "..oqppppppWpWppppppqo...",
+     "..oqppppppWWWppppppqo..."
+    ]
+   }
+  },
+  {
+   "id": "semi",
+   "name": "세미 에이타",
+   "jp": "瀬見英太",
+   "position": "세터 (핀치 서버)",
+   "number": "3",
+   "grade": "3학년",
+   "height": "177.2cm",
+   "birthday": "11월 11일",
+   "voice": "쿠스노키 다이텐",
+   "stats": {
+    "power": 3,
+    "jump": 3,
+    "stamina": 3,
+    "strategy": 3,
+    "technique": 4,
+    "speed": 3
+   },
+   "nickname": "?",
+   "intro": "팀 스타일을 위해 주전 세터 자리를 시라부에게 내준 3학년 세터. 자기 색이 강한 플레이를 좋아하며, 교체 투입 시 강력한 서브로 흐름을 바꾼다.",
+   "skills": [
+    "강력한 핀치 서브",
+    "자기주장이 강한 토스"
+   ],
+   "quote": "내 서브로 흐름을 바꿔주겠어.",
+   "sprite": {
+    "palette": {
+     ".": "transparent",
+     "o": "#1b1420",
+     "p": "#6b3fa0",
+     "q": "#4a2774",
+     "W": "#f5f5f5",
+     "e": "#1c1c26",
+     "m": "#8a3f3a",
+     "h": "#d9d4bf",
+     "H": "#57544c",
+     "L": "#f6f2e2",
+     "s": "#f5d8bc",
+     "d": "#d4ae8e"
+    },
+    "rows": [
+     "........................",
+     "........oooooooooo......",
+     "....oohhhhLLLLhhhoo.....",
+     "...ohhhhhhLLhhhhhhHo....",
+     "...oHhhhhhhhhhhhhhhHo...",
+     "...oHHhhhhhhhhhhhhHHo...",
+     "...oHHHsssshhhhhhHHHo...",
+     "...oHHssssssshhhhHHo....",
+     "....oHsseessssssHHo.....",
+     "....osssWesssseeWso.....",
+     ".....osssssssssssso.....",
+     ".....osssssdssssso......",
+     ".....odssssssssssdo.....",
+     ".....odsssssmmmssdo.....",
+     ".....oddssmmssssddo.....",
+     "......ooddddddddoo......",
+     ".........odsdo..........",
+     ".....oqWppdssdppWqo.....",
+     "....oqWpppWWWWpppWqo....",
+     "...oqWppppppWWWWppWqo...",
+     "...oqWppppppppWpppWqo...",
+     "..oqWppppppWWWWpppWqo...",
+     "..oqWppppppppWppppWqo...",
+     "..oqWppppppWWWWpppWqo..."
+    ]
+   }
+  }
+ ]
+});
+
+</script>
+<script>
+(function(){
+function body(top,u,w,n){return top.concat(["..hhhhhhhhhhhh..","..hssssssssssh..","..hsskssskssh...","..hssssssssssh..","...sssssmmsss...","....ssssssss....",".....ssssss.....","...uuuussuuuu...","..uuuuuwwuuuuu..",".uuuuuwnnwuuuuu.",".uuuuuuwwuuuuuu.",".uuuuuuuuuuuuuu.",".uuuuuuuuuuuuuu."]);}
+function pal(h,u,w,n){return {'.':'transparent','h':h,'s':'#f2c9a0','k':'#222222','m':'#b5524a','u':u,'w':w,'n':n};}
+var std=["................","....hhhhhhhh....","...hhhhhhhhhh..."];
+window.HQ = window.HQ || []; window.HQ.push({ id:'fukurodani', team:'후쿠로다니 학원', colors:{main:'#1a1a1a',sub:'#c9a227'}, motto:'전국 5대 에이스 보쿠토를 중심으로 한 도쿄의 강호, 부엉이 군단',
+chars:[
+{id:'bokuto',name:'보쿠토 코타로',jp:'木兎 光太郎',position:'윙 스파이커',number:'4',grade:'3학년 (주장)',height:'190.3cm',birthday:'9월 20일',voice:'키무라 료헤이',stats:{power:5,jump:4,stamina:4,strategy:2,technique:4,speed:4},nickname:'부엉이 에이스',intro:'전국 5대 에이스로 꼽히는 후쿠로다니의 주장. 기분파라 컨디션 기복이 심하지만 한번 불이 붙으면 누구도 막기 힘들다. 크로스와 직선을 자유롭게 구사하는 공격형 에이스다.',skills:['초고각 크로스 스파이크','직선 스파이크','페인트'],quote:'헤이 헤이 헤이! 오늘도 내가 최고다!',sprite:{"palette":{".":"transparent","o":"#1a1a1a","h":"#e6e6e6","H":"#2b2b2b","g":"#ffffff","s":"#f2c39a","S":"#d49a70","e":"#f0b81c","k":"#111111","m":"#b03a3a","u":"#f6f6f6","n":"#c9a227"},"rows":["..o.....oo....oo.....o..",".oho...ohgo..oHho...oho.",".ohho.ohhhgooHHhho.ohho.","..ohhohhHhhhhhhHhhohho..","..ohhhhHHhhhhhhHHhhhho..",".ohhhHHhhhhhhhhhhHHhhho.",".ohhhhhhhhhhhhhhhhhhhho.","..ohhhossssssssssohhho..","..ohhoskkksssskkksohho..","...ohsseekssssekeesho...","...osseeekssssekeesso...","...oSssssssssssssssSo...","...oSsssssSSssssssSSo...","....oSssommmmmmossSo....","....oSssomggggmossSo....",".....oSsssommossSSo.....","......oSSSSSSSSSSo......","..ooooouSSSSSSSuooooo...",".ouuuuuuuoSSSouuuuuuuo..","ouuuuuuuuuoSouuuuuuuuuo.","ouHuuuuuuunnnuuuuuuuHuo.","ouHuuuuuuuHHHuuuuuuuHuo.","ouHuuuuuuuuHuuuuuuuuHuo.","onnnnnnnnnnnnnnnnnnnnnno"]}},
+{id:'akaashi',name:'아카아시 케이지',jp:'赤葦 京治',position:'세터',number:'5',grade:'2학년 (부주장)',height:'182.3cm',birthday:'12월 5일',voice:'이시카와 카이토',stats:{power:3,jump:3,stamina:4,strategy:5,technique:4,speed:3},nickname:'보쿠토 조련사',intro:'침착하고 분석적인 세터. 보쿠토의 기분 변화를 누구보다 잘 파악해 팀을 조율한다. 정확한 토스와 냉정한 판단력이 강점이다.',skills:['정밀 토스','보쿠토 컨디션 관리','투 어택'],quote:'에이스를 살리는 게 세터의 일이니까요.',sprite:{"palette":{".":"transparent","o":"#0d0d14","h":"#1e1e2c","H":"#11111a","g":"#3a3a55","s":"#efc7a2","S":"#cfa07a","e":"#ffffff","k":"#2c5a4a","m":"#9a5a50","u":"#f6f6f6","n":"#c9a227"},"rows":["........................","........oooooooo........","......oohhgghhhhoo......",".....ohhhgghhhhhhho.....","....ohhhhhhhhhhhhhhho...","....ohhhHhhhHhhhHhhho...","...ohhhHhhhHhhhHhhhhho..","...ohhHhsHhhssHhhsHhho..","...ohhssssssssssssshho..","...ohsoooossssoooossho..","...ohsseksssssseksssho..","....osskksssssskkssso...","....oSssssssssssssSo....","....oSssssssSsssssSo....",".....oSsssssssssssSo....",".....oSssssommsssSo.....","......oSSsssssssSo......",".......ooSSSSSSoo.......","..oooooouSSSSSSuoooooo..",".ouuuuuuuoSSSSouuuuuuuo.","ouuuuuuuuuoSSouuuuuuuuuo","ounuuuuuuuunnuuuuuuuunuo","ounuuuuuuuuHHuuuuuuuunuo","onnnnnnnnnnnnnnnnnnnnnno"]}},
+{id:'konoha',name:'코노하 아키노리',jp:'木葉 秋紀',position:'윙 스파이커',number:'7',grade:'3학년',height:'?',birthday:'9월 30일',voice:'?',stats:{power:3,jump:3,stamina:3,strategy:3,technique:4,speed:3},nickname:'만능 플레이어',intro:'공수 모두 무난하게 해내는 만능형 선수. 어느 포지션에서든 안정적으로 팀을 받쳐준다.',skills:['리시브','안정된 스파이크','세컨드 토스'],quote:'에이스가 침울해도 우리가 있잖아.',sprite:{"palette":{".":"transparent","o":"#3a2a14","h":"#d4b06e","H":"#a8844a","g":"#f0d8a0","s":"#f4cba4","S":"#d6a27a","e":"#ffffff","k":"#3a2a1a","m":"#c05a50","u":"#f6f6f6","n":"#1a1a1a"},"rows":["........................",".........ooooo..........","......oooghhhhooo.......",".....oghhhhhhhhhhoo.....","....ohhhhhhhhhhhhhhoo...","...ohhhhhHhhhhhHhhhho...","...ohhhhHhhhhhHhhhhhho..","..ohhhhHhhhhhHhhhhhhho..","..ohhHHssHsssssHHhhho...","...ohsssssssssssssho....","...ohskkkssssskkksho....","...osseeksssseekssso....","...osseeksssseekssso....","....oSsssssssssssSso....","....oSssssssSssssSo.....",".....oSssmssssmssSo.....",".....oSsssmmmmsssSo.....","......ooSSSSSSSSoo......","..oooooouSSSSSuooooo....",".ouuuuuuuoSSSouuuuuuo...","ouuuuuuuuuoSouuuuuuuuo..","ounnuuuuuuunuuuuuuunnuo.","ounnuuuuuuuuuuuuuuunnuo.","onnnnnnnnnnnnnnnnnnnnno."]}},
+{id:'komi',name:'코미 하루키',jp:'小見 春樹',position:'리베로',number:'3',grade:'3학년',height:'?',birthday:'?',voice:'?',stats:{power:2,jump:2,stamina:4,strategy:3,technique:4,speed:4},nickname:'후쿠로다니의 수호신',intro:'작은 체구지만 날렵한 수비로 후방을 지키는 리베로. 밝은 성격으로 팀 분위기를 띄운다.',skills:['디그','리시브'],quote:'공은 내가 다 받아줄게!',sprite:{"palette":{".":"transparent","o":"#24160a","h":"#6b4a2e","H":"#4a3018","g":"#8e6a44","s":"#f6d0aa","S":"#d8a882","e":"#ffffff","k":"#3a2412","m":"#c8504a","u":"#1a1a1a","n":"#c9a227"},"rows":["........................","........................","..........oooo..........","........oohhgghoo.......",".......ohhhhgghhho......","......ohhhhhhhhhhho.....","......ohHhhHhhHhhho.....",".....ohhssHsssHsshho....",".....ohsssssssssssho....",".....ohsokssssskossho...",".....ossekessssekesso...",".....ossekessssekesso...","......oSsssssssssSo.....","......oSsssmmmmssSo.....","......oSssmeeeemsSo.....",".......oSssmmmmsSo......","........ooSSSSSoo.......","....ooooouSSSSuoooo.....","...ouuuuuuoSSouuuuuo....","..ouuuuuuuuoouuuuuuuo...","..ounuuuuuunnuuuuunuo...","..ounuuuuuuuuuuuuunuo...","..ounuuuuuuuuuuuuunuo...","..onnnnnnnnnnnnnnnnno..."]}}
+]});
+})();
+
+</script>
+<script>
+window.HQ = window.HQ || [];
+(function(){
+var body = [
+'....kssssssk....',
+'.....kssssk.....',
+'...kkwwsswwkk...',
+'..kuuuwwwwuuuk..',
+'.kuuuuurruuuuuk.',
+'.kuuuuurruuuuuk.'];
+function face(h1,h2,h3,h4,eye){
+  return [h1,h2,h3,h4,
+  '..khsssssssshk..',
+  '..kssssssssssk..',
+  '..kss'+eye+'ssss'+eye+'ssk..',
+  '..kssssssssssk..',
+  '..ksssskksssk...'.slice(0,16),
+  '...kssssssssk...'].concat(body);
+}
+function pal(hair){return {'.':'transparent','k':'#1a1a1a','h':hair,'s':'#f2c9a0','e':'#3a2a1a','w':'#ffffff','u':'#2a2a2e','r':'#b0202a'};}
+window.HQ.push({ id:'inarizaki', team:'이나리자키 고교', colors:{main:'#2a2a2e',sub:'#b0202a'},
+motto:'思い出なんかいらん - 추억은 필요 없다, 효고 최강의 도전자',
+chars:[
+{id:'miya_atsumu',name:'미야 아츠무',jp:'宮侑',position:'세터',number:'7',grade:'2학년',height:'183.6cm',birthday:'10월 5일',voice:'入野自由',
+stats:{power:4,jump:4,stamina:4,strategy:4,technique:5,speed:4},nickname:'고교 No.1 세터',
+intro:'쌍둥이 형으로 고교 최고 세터라 불린다. 오만하고 직설적이지만 배구에는 누구보다 진지하며, 스파이커가 치기 쉬운 토스를 올리는 데 자부심을 가진다.',
+skills:['정밀 토스','점프 플로터/스파이크 서브 양손 구사','쌍둥이 속공'],quote:'토스 잘못 친 거면 내 탓 아니다, 니가 못 친 기다.',
+sprite:{"palette":{".":"transparent","k":"#141418","u":"#1e1e22","U":"#34343a","g":"#9a9aa2","w":"#f4f4f4","e":"#2a1c12","h":"#e8c64a","H":"#b8902a","L":"#fff0a0","s":"#f3cba4","S":"#d9a47c","m":"#9a3a30","b":"#a07a20"},"rows":["........................","........kkkkkkk.........","......kkLLLLhhhkk.......",".....kLLLhhhhhhhhk......","....khhhhhhhhhhhhhhk....","....khhhhhhhhhhhHHhhk...","...khhhHHhhhhhhHsHhhk...","...khhHssHhhhHsssshhk...","...khHssssHHssssssShk...","...kHsbbssssssbbsssHk...","...kssssssssssssssssk...","...ksswekssssswekssk....","...ksseeksssseeksssk....","...kSsssssssssssssSk....","....ksssssSSssssssk.....","....ksssmwwwwmssk.......",".....ksssmmmmsssk.......","......kSssssssSk........",".......kkSSSSkk.........",".....kkuuwwSSwwuukk.....","...kkuuuugwsswguuuukk...","..kuuuuuugwwwwguuuuuk...","..kuuuuuuwwwwuuuuuuuk...","..kUuuuuuuuuuuuuuuuUk..."]}},
+{id:'miya_osamu',name:'미야 오사무',jp:'宮治',position:'윙 스파이커',number:'11',grade:'2학년',height:'183.8cm',birthday:'10월 5일',voice:'?',
+stats:{power:4,jump:4,stamina:4,strategy:4,technique:4,speed:4},nickname:'사무',
+intro:'아츠무의 쌍둥이 동생. 형보다 침착하고 무뚝뚝하지만 승부욕은 못지않다. 먹는 것을 매우 좋아하며 다재다능한 플레이로 팀을 받친다.',
+skills:['쌍둥이 속공','세트도 가능한 올라운드 플레이'],quote:'맛있는 거 먹으면 다 이긴 기분이다.',
+sprite:{"palette":{".":"transparent","k":"#141418","u":"#1e1e22","U":"#34343a","g":"#9a9aa2","w":"#f4f4f4","e":"#2a1c12","h":"#8c8c96","H":"#5e5e68","L":"#c4c4cc","s":"#f0c8a2","S":"#d2a07a","m":"#7a3a32","b":"#4a4a52"},"rows":["........................",".........kkkkkkk........",".......kkhhhhLLLkk......","......khhhhhhhhLLLk.....","....khhhhhhhhhhhhhhk....","...khhHHhhhhhhhhhhhk....","...khhhsHhhhhhhhHHhhk...","...khhssssHhhhHHsssHk...","...kHsssssssHHssssssk...","...kssbbbsssssbbbsssk...","...kssssssssssssssssk...","...kssskkkssssskkksssk..","...ksssweessssweesssk...","...ksssssssssssssssSk...","....kSssssSsssssssSk....","....kssssssssssssssk....",".....kssssmmmmsssSk.....","......kSssssssssSk......","........kkSSSSkk........",".....kkuuUUSSUUuukk.....","...kkuuuuUwssssUuuukk...","..kuuuuuuuUwwwwUuuuuuk..","..kuuwwuuuuUUUUuuuuuuk..","..kUuwwuuuuuuuuuuuuuUk.."]}},
+{id:'kita_shinsuke',name:'키타 신스케',jp:'北信介',position:'윙 스파이커',number:'1',grade:'3학년 (주장)',height:'175.2cm',birthday:'?',voice:'?',
+stats:{power:3,jump:3,stamina:4,strategy:4,technique:4,speed:3},nickname:'?',
+intro:'이나리자키의 주장. 화려함은 없지만 매일 해야 할 일을 빈틈없이 반복하는 성실함으로 팀원들의 존경을 받는다. 결과보다 과정을 중시한다.',
+skills:['안정된 리시브','실수 없는 기본기'],quote:'결과는 덤이다. 매일 하는 게 중요하다.',
+sprite:{"palette":{".":"transparent","k":"#141418","u":"#1e1e22","U":"#34343a","g":"#9a9aa2","w":"#f4f4f4","e":"#2a1c12","h":"#e6e6e2","H":"#b4b4b0","L":"#ffffff","d":"#3a3a3e","s":"#f2d0b0","S":"#d6ac88","m":"#8a4a40","b":"#9a9a96"},"rows":["........................","........................","........kkkkkkkk........","......kkLLhhhhhhkk......",".....kLLhhhhhhhhhhk.....","....khhhhhhhhhhhhhhk....","....khhhhhhhhhhhhhhk....","....kHhHhHhHhHhHhHhk....","....kdddddddddddddddk...","....kdsdsdsdsdsdsdsdk...","....kssbbbssssbbbsssk...","....kssssssssssssssk....","....kssweeksssweeksk....","....ksseeessssseeesk....","....kssssssssssssssk....","....kSsssssSSssssssk....","....kSssssssssssssSk....",".....kssssmmmmssssk.....","......kSssssssssSk......",".......kkSSSSSSkk.......","....kkuuuugwwguuuukk....","..kkuuuuuugwwguuuuuukk..","..kuuuuuuuggggguuuuuuk..","..kuuuuuuuuuuuuuuuuuuk.."]}},
+{id:'suna_rintaro',name:'스나 린타로',jp:'角名倫太郎',position:'미들 블로커',number:'10',grade:'2학년',height:'185.7cm',birthday:'?',voice:'?',
+stats:{power:3,jump:4,stamina:3,strategy:4,technique:4,speed:4},nickname:'?',
+intro:'나른하고 무심한 태도의 미들 블로커. 유연한 몸을 활용해 몸통을 비틀어 치는 스파이크로 블로커를 따돌리며, 남의 일을 몰래 촬영하는 게 취미다.',
+skills:['몸통 비틀기 스파이크','리드 블로킹'],quote:'뭐, 적당히 열심히 해볼까.',
+sprite:{"palette":{".":"transparent","k":"#141418","u":"#1e1e22","U":"#34343a","g":"#9a9aa2","w":"#f4f4f4","e":"#2a1c12","h":"#3a2a22","H":"#22180f","L":"#6a5040","s":"#eec8a0","S":"#cfa07a","m":"#7a3a30","b":"#22180f"},"rows":["........................",".........kkkkkk.........",".......kkhhLLhhkk.......","......khhhLLhhhhhk......",".....khhhhhhhhhhhhk.....","....khhhhhhhhhhhhhhk....","....khhhHhhhhHhhhhhk....","...khhhHshhhhHshhhhhk...","...khhHssshhHssshhhhk...","...khHsbbbssssbbbsHhk...","...khHssssssssssssHhk...","...khHskkkessskkkesHhk..","...khssssssssssssssHk...","...khSssssssssssssShk...","...khhssssSssssssshhk...","....khkssssssssssskhk...","....khksssmmmmmsssk.k...",".....kkkSsssssssSk......","........kkSSSSkk........",".......kuuSSSSuuk.......","....kkuuUUwSSwUUuukk....","..kkuuuuuUwwwwUuuuuukk..","..kuuuuuuuuUUuuuuuwwuk..","..kUuuuuuuuuuuuuuuwwUk.."]}},
+{id:'ojiro_aran',name:'오지로 아란',jp:'尾白アラン',position:'윙 스파이커',number:'4',grade:'3학년',height:'184.7cm',birthday:'?',voice:'?',
+stats:{power:5,jump:4,stamina:4,strategy:3,technique:4,speed:4},nickname:'전국 5대 스파이커',
+intro:'이나리자키의 에이스로 전국 상위 5인 스파이커 중 한 명. 쌍둥이의 폭주를 말리는 상식인 역할이자 팀의 든든한 득점원이다.',
+skills:['파워 스파이크','안정된 서브'],quote:'에이스가 점수 내는 건 당연한 기다.',
+sprite:{"palette":{".":"transparent","k":"#141418","u":"#1e1e22","U":"#34343a","g":"#9a9aa2","w":"#f4f4f4","e":"#140c08","h":"#1a1a1a","H":"#0a0a0a","L":"#4a4a52","s":"#b07a4e","S":"#8a5a36","m":"#5a2418","b":"#1a1010"},"rows":["........................","........................","........................",".........kkkkkkk........",".......kkLhLhLhhkk......","......khhLhLhhhhhhk.....",".....khhhhhhhhhhhhhk....",".....khhhhhhhhhhhhhk....","....khHsHsHsHsHsHsHhk...","....kHssssssssssssssk...","....ksbbbbssssbbbbssk...","....kssssssssssssssk....","....kswweessswweessk....","....ksseessssseesssk....","....kssssssSssssssSk....","....kSsssssSSssssssk....","....kSssssssssssssSk....","....kSsmssssssssmsSk....",".....kSsmmmmmmmmsSk.....","......kSSsssssSSk.......",".......kkSSSSSkk........","....kkuuuUwwwwUuuukk....","..kkuuuuuuUwwUuuuuuukk..","..kuuggguuuuuuuugggguk.."]}}
+]});
+})();
+
+</script>
+<script>
+window.HQ = window.HQ || []; window.HQ.push({ id:'datetech', team:'다테공업 고교', colors:{main:'#0f7a45',sub:'#ffffff'}, motto:'철벽 - 미야기 최강의 블로킹 군단', chars:[
+{ id:'aone', name:'아오네 타카노부', jp:'青根高伸', position:'미들 블로커', number:'7', grade:'2학년', height:'191.8cm', birthday:'8월 13일', voice:'?', stats:{power:4,jump:4,stamina:4,strategy:3,technique:4,speed:3}, nickname:'철벽의 핵심', intro:'말수가 거의 없고 무표정하지만 예의 바른 미들 블로커. 상대 에이스를 끝까지 따라붙는 리드 블록으로 다테공업 철벽의 중심을 맡는다. 눈썹이 없는 독특한 외모가 특징이다.', skills:['리드 블록','에이스 마크','속공'], quote:'(말없이 고개를 숙여 인사한다)', sprite:{"palette":{".":"transparent","o":"#14251c","g":"#0f7a45","G":"#08502c","w":"#ffffff","e":"#1b1b1b","s":"#f0c49c","S":"#cf9c74","h":"#e9ecef","H":"#b7bcc4","L":"#ffffff","m":"#8a5a40"},"rows":["........oooooooo........",".......ohLLhhhhho.......","......ohLLhhhhhhho......",".....ohhhhhhhHHHHHo.....",".....ohhhhhhhHHHHHo.....",".....ohhsssssssshho.....",".....osssssssssssso.....",".....osssSssssSssso.....","....ossseesssseessSo....","....osSssssssssssSSo....","....osSssssSSssssSSo....",".....oSssssssssssSo.....",".....oSsssmmmmsssSo.....",".....oSssssssssssSo.....","......ooSSSSSSSSoo......","........oSSSSSSo........",".......ooSSSSSSoo.......","....oooggwwwwwwggooo....",".o.oggggggwwwwggggggo.o.","oGoggggggggwwwgggggggoGo","oGGGgggggggggwggggggGGGo","oGGGggggggggwgggggggGGGo","oGwwwwwwwwwwwwwwwwwwwwGo","oGGGggggggggggggggggGGGo"]} },
+{ id:'futakuchi', name:'후타쿠치 켄지', jp:'二口堅治', position:'윙 스파이커', number:'2', grade:'2학년 (신 주장)', height:'184.2cm', birthday:'11월 10일', voice:'?', stats:{power:4,jump:4,stamina:4,strategy:4,technique:4,speed:3}, nickname:'건방진 신입 주장', intro:'입이 거칠고 도발적인 성격이지만 실력은 확실한 윙 스파이커. 공격과 블로킹 모두 능하며, 3학년 은퇴 후 주장이 되어 팀을 이끈다.', skills:['블록 아웃','강력한 스파이크','도발'], quote:'철벽은 이제부터 더 단단해질 거야.', sprite:{"palette":{".":"transparent","o":"#14251c","g":"#0f7a45","G":"#08502c","w":"#ffffff","e":"#1b1b1b","s":"#f3cba4","S":"#d39e78","h":"#7a5230","H":"#4f331c","L":"#a8774b","m":"#a0523d"},"rows":["........ooooooooo.......","......oohLLhhhhhhoo.....",".....ohLLhhhLhhhhhho....","....oHHhhhhhhhhhhhHo....","....oHHhhhhhhhhhhhHo....","....oHHhhhhhhhhhhhho....","....oHHhssshhhssshho....","....oHHsHHssssHHssho....","....oHHsssHssHsssso.....","....ossssewssswessSo....","....osssssssSsmsssSo....",".....oosssmmmmsssoo.....",".......osssssssso.......","........oSSSSSSo........",".........oooooo.........",".........oSSSSo.........",".......oooSSSSooo.......","....oooggwsssswggooo....","...ogwwgggwsswgggwwgo...","..ogwggggggwwggggggwgo..",".oGGgggggggggwggggggGGo.",".oGGggggggggwgggggggGGo.",".oGGgggggggwwwggggggGGo.",".oGGggggggggggggggggGGo."]} },
+{ id:'moniwa', name:'모니와 카나메', jp:'茂庭要', position:'세터', number:'1', grade:'3학년 (주장)', height:'176.0cm', birthday:'?', voice:'?', stats:{power:3,jump:3,stamina:3,strategy:4,technique:4,speed:3}, nickname:'고생하는 주장', intro:'개성 강한 후배들을 다독이며 팀을 묶는 온화한 3학년 주장. 블로커 중심 팀을 안정적인 토스로 받쳐준다.', skills:['안정적인 토스','팀 조율'], quote:'우리 철벽을 믿어!', sprite:{"palette":{".":"transparent","o":"#14251c","g":"#0f7a45","G":"#08502c","w":"#ffffff","e":"#1b1b1b","s":"#f6d2ae","S":"#d9a986","h":"#262626","H":"#0d0d0d","L":"#55555e","m":"#9c4a3c"},"rows":["........................","........oooooooo........",".......ohLLhhhhhoo......","......ohLhhhhhHHHHo.....",".....ohhhhhhhhHHHHo.....",".....ohhhhhhhhhhhho.....",".....ohshhhsshsssho.....",".....ohsshhsshhssho.....",".....osshsssssshsso.....","....osssseesseesssSo....","....osssssssssssssSo....",".....ossSssSsssSsso.....","......osssmssmssso......",".......osssmmssso.......","........oSSSSSSo........",".........oSSSSo.........",".......oooSSSSooo.......","....ooogwwwwwwwwgooo....","...oggggwggwwggwggggo...","..ogggggwgggwggwgggggo..","...oogggwggwwggwgggoo...","....oGggwgggwggwggGo....","....oGggwggwwwgwggGo....","....oGggwggggggwggGo...."]} },
+{ id:'koganegawa', name:'코가네가와 칸지', jp:'黄金川貫至', position:'세터', number:'', grade:'1학년', height:'?', birthday:'?', voice:'?', stats:{power:3,jump:4,stamina:4,strategy:2,technique:2,speed:3}, nickname:'거대 세터', intro:'큰 키를 살려 블로킹에도 가담하는 1학년 세터. 아직 토스는 서툴지만 열정과 성장 가능성이 넘친다. 노란 삐죽머리가 트레이드마크.', skills:['높은 블로킹','점프 토스'], quote:'한 번 더 올리겠습니다!', sprite:{"palette":{".":"transparent","o":"#14251c","g":"#0f7a45","G":"#08502c","w":"#ffffff","e":"#1b1b1b","s":"#f1c39a","S":"#d09a70","h":"#f2d22e","H":"#c49a12","L":"#fff27a","m":"#7a2e2e"},"rows":["......oho.oho.oho.......",".....ooLhohLhooLhoo.....","....ohhhLhhhLhhhhhho....","....ohhhhhhhhhhhhhHo....","....ohhhhhhhhhHHHHHo....",".....ohhhhhhhhhhhHo.....",".....ohsshsshshssho.....",".....ossHHHssHHHsso.....","....osssweessweessSo....","....ossseeesseeessSo....","....ossssssSSsssssSo....",".....osssmwwwwmssso.....","......osssmmmmssso......",".......osssssssso.......","........oSSSSSSo........",".........oSSSSo.........",".......oooSSSSooo.......","..oooooggwsssswggooooo..",".oggggggggwsswggggggggo.",".owwwwwwwwwwwwwwwwwwwwo.",".oGGggggggggggggggggGGo.",".oGGgggggGGGGGGgggggGGo.",".oGGgggggGGGGGGgggggGGo.",".oGGgggggGGGGGGgggggGGo."]} }
+] });
+
+</script>
+<script>
+window.HQ = window.HQ || []; window.HQ.push({ id:'kamomedai', team:'카모메다이 고교', colors:{main:'#ffffff',sub:'#1f2a6b'}, motto:'높이와 정밀함을 겸비한 가나가와의 강호, "블로킹이 강한 팀"', chars:[
+{ id:'hoshiumi', name:'호시우미 코라이', jp:'星海光来', position:'윙 스파이커', number:'', grade:'2학년', height:'?', birthday:'?', voice:'?', stats:{power:4,jump:5,stamina:4,strategy:4,technique:5,speed:4}, nickname:'작은 거인(현역)', intro:'작은 체격에도 모든 기술을 고루 갖춘 올라운더 에이스. 자존심이 강하고 직설적이며, 작다는 이유로 무시당하는 것을 무엇보다 싫어한다. 히나타의 라이벌로 맞선다.', skills:['고타점 점프 스파이크','점프 서브','정밀한 리시브'], quote:'작다는 건 불리할 뿐, 배구를 못 할 이유는 아니야!', sprite:{ palette:{'.':'transparent','o':'#2a2a35','h':'#f4f4f8','H':'#b9bccb','s':'#f3cba8','S':'#d9a682','e':'#3a2a1a','w':'#ffffff','n':'#141414','b':'#7fc8ef','m':'#b8433a','l':'#fff4e0'}, rows:[
+'..o....o....o.....o.....',
+'.oho..oho..oho...oho....',
+'.ohho.ohhoohhho.ohhho.o.',
+'..ohhohhhhhhhhhhohhhhoho',
+'.oohhhhhhhhhhhhhhhhhhho.',
+'ohhhhhhHhhhhhhHhhhhhhhoo',
+'.ohhhHhhhhHhhhhhhHhhhho.',
+'..ohhhhoHhhhhhHohhhhho..',
+'..ohhoSsoHhhhoossShhoo..',
+'..ohoSsssohhosssssSho...',
+'..ooSeesssoossseesSo....',
+'...oSweesssssssweeSo....',
+'...oSssssssssssssssSo...',
+'....oSsssssSssssssSo....',
+'....oSssmmmmmmmssSo.....',
+'.....oSssmwwwmssSo......',
+'......ooSssssssoo.......',
+'........oSSSSSo.........',
+'....oonnnbsssbnnnoo.....',
+'..onnnnnbbnnnbbnnnnno...',
+'.onnnbnnnnbbbnnnnbnnno..',
+'.onnbbnnnnwwwnnnnbbnnno.',
+'.onnbnnnnnwwwnnnnnbnnno.',
+'.onnnnnnnnnnnnnnnnnnnno.']}},
+{ id:'hirugami', name:'히루가미 사치로', jp:'昼神幸郎', position:'미들 블로커', number:'', grade:'2학년', height:'?', birthday:'?', voice:'?', stats:{power:4,jump:4,stamina:4,strategy:4,technique:4,speed:3}, nickname:'?', intro:'카모메다이 블로킹의 핵심인 장신 미들 블로커. 침착하고 온화한 성격으로, 배구를 담담하게 즐긴다. 정확한 리드 블로킹으로 상대 공격을 봉쇄한다.', skills:['리드 블로킹','속공'], quote:'배구는 결국 즐기는 사람이 강한 거야.', sprite:{ palette:{'.':'transparent','o':'#2b1e14','h':'#6b4a2e','H':'#4a3220','l':'#9a7350','s':'#f1c9a5','S':'#d4a682','w':'#ffffff','n':'#151515','b':'#8fd0f2','m':'#b06a55','p':'#e8a99a'}, rows:[
+'........................',
+'........oooooooo........',
+'......oohhhlllhhoo......',
+'.....ohhhhllllhhhho.....',
+'....ohhhhhhhhhhhhhhho...',
+'....ohhhhhhhhhHHhhhho...',
+'...ohhhhhhhhhHHhhhhhho..',
+'...ohhhhhhhHHssHhhhhho..',
+'...ohhHHHHHsssssHHhhho..',
+'...ohHsssssssssssssHho..',
+'...oHSssssssssssssssSo..',
+'...oHSsooosssssooosSo...',
+'....oSsooossssssoooSo...',
+'....oSsssssssssssssSo...',
+'....oSppsssssSssssppSo..',
+'.....oSsssssssssssSo....',
+'.....oSssssmmmmsssSo....',
+'......oSssssssssSSo.....',
+'.......ooSSSSSSSoo......',
+'.....oonnnnsssnnnnoo....',
+'...onnnnnnbbbbbnnnnnno..',
+'..onnnnnnbbwwwbbnnnnnno.',
+'..onbbnnnnnwwwnnnnnbbno.',
+'..onnnnnnnnnnnnnnnnnnno.']}},
+{ id:'hakuba', name:'하쿠바 가조', jp:'白馬芽生', position:'미들 블로커', number:'', grade:'2학년', height:'?', birthday:'?', voice:'?', stats:{power:4,jump:3,stamina:3,strategy:2,technique:3,speed:2}, nickname:'?', intro:'압도적인 신장을 지닌 1학년 미들 블로커. 승부욕이 강하고 단순하며, 높이를 살린 공격과 블로킹으로 존재감을 드러낸다.', skills:['고타점 블로킹','높이 공격'], quote:'이 높이는 아무도 못 넘어!', sprite:{ palette:{'.':'transparent','o':'#0d0d0d','h':'#1e1e24','H':'#3a3a48','s':'#e8b98f','S':'#c99670','e':'#1a1a1a','w':'#ffffff','n':'#121212','b':'#6fbde8','m':'#8b3a2a','t':'#f7f7f7'}, rows:[
+'.......oooooooooo.......',
+'......ohhhhhhhhhho......',
+'.....ohhHhhhhhHhhho.....',
+'.....ohhhhhhhhhhhho.....',
+'.....ohSsssssssssSo.....',
+'.....oSssssssssssso.....',
+'.....oSoooossooooSo.....',
+'.....oSswessssewssSo....',
+'.....oSssssssssssSo.....',
+'.....oSsssssSssssSo.....',
+'.....oSsssssSssssSo.....',
+'.....oSssssSSSsssSo.....',
+'.....oSsmmmmmmmmsSo.....',
+'.....oSsmttttttmsSo.....',
+'.....oSssmmmmmmssSo.....',
+'......oSssssssssSo......',
+'.......oSSssssSSo.......',
+'........ooSSSSoo........',
+'.........oSSSSo.........',
+'....oonnnnbsssbnnnnoo...',
+'..onnnnnnnbbbbbnnnnnnno.',
+'.onbbbnnnnnwwwnnnnnbbbno',
+'.onnnnnnnnnwwwnnnnnnnnno',
+'.onnnnnnnnnnnnnnnnnnnnno']}}
+]});
+
+</script>
+<script>
+window.HQ = window.HQ || [];
+(function(){
+var R=["................","....hhhhhhhh....","...hhhhhhhhhh...","..hhhhhhhhhhhh..","..hhssssssshhh..","..hsssssssssh...","..hseesssseesh..","..hsssssssssh...","...sssskkssss...","....ssssssss....",".....ssssss.....","...uuuwsswuuu...","..uuuuwwwwuuuu..",".uuuuuunnuuuuuu.",".uuuuuunnuuuuuu.",".uuuuuuuuuuuuuu."];
+function sp(h,s,e,u,w,n,k){return {palette:{'.':'transparent',h:h,s:s,e:e,u:u,w:w,n:n,k:k},rows:R.slice()};}
+window.HQ.push({ id:'others', team:'기타 (코치·매니저)', colors:{main:'#1f2a44',sub:'#f08a24'}, motto:'코트 밖에서 팀을 움직이는 사람들',
+chars:[
+{id:'ukai_keishin',name:'우카이 케이신',jp:'烏養繋心',position:'코치',number:'',grade:'카라스노 코치',height:'?',birthday:'4월 5일',voice:'江川央生',stats:{power:3,jump:3,stamina:3,strategy:5,technique:4,speed:3},nickname:'우카이 코치',intro:'카라스노 OB이자 전설적인 감독 우카이의 손자. 거친 말투와 달리 선수 개개인의 무기를 정확히 파악해 전술을 짜는 지도자다.',skills:['상대 분석','속공 전술 설계','작전 타임 운용'],quote:'코트 위에서 너희는 강해질 수 있어.',sprite:{"palette":{".":"transparent","o":"#2a1a10","h":"#f0cf4a","H":"#c99a22","b":"#2b2b2b","s":"#f2c6a0","S":"#d39a74","w":"#e8e8e8","e":"#3a2a1a","m":"#8a3a2a","c":"#1f2a44","a":"#f08a24"},"rows":["........................",".......oooooooooo.......",".....oohhhHhhhhHhho.....","....ohhHhhhhhhHhhhho....","....ohhhhhhHhhhhhhHo....","....obbbbbbbbbbbbbbo....","....obbbbbbbbbbbbbbo....","....oHssssssssssssho....","....osooossssssoooso....","....osswessssssewsso....","...wossssssssssssssow...","....osssssssSsssssso....","....oSssssssssssssSo....",".....osssmmmmmmssso.....",".....osSssssssssSso.....","......oSSSSSSSSSSo......","........oooooooo........",".........oSSSSo.........","....ooccccSSSSccccoo....","...occcccaSSSSaccccco...","..occccccacSScacccccco..","..ocaccccccaaccccccaco..",".occacccccccaccccccacco.",".occacccccccaccccccacco."]}},
+{id:'takeda_ittetsu',name:'타케다 잇테츠',jp:'武田一鉄',position:'고문(감독)',number:'',grade:'카라스노 배구부 고문 교사',height:'?',birthday:'1월 2일',voice:'神谷浩史',stats:{power:1,jump:1,stamina:2,strategy:3,technique:1,speed:2},nickname:'타케다 선생님',intro:'배구 경험은 없지만 연습 시합을 따내고 코치를 모셔오기 위해 끈질기게 뛰어다니는 국어 교사. 진심 어린 말로 선수들의 마음을 붙잡는다.',skills:['연습 시합 섭외','설득력','선수 격려'],quote:'지금 이 순간도 너희는 성장 중이야.',sprite:{"palette":{".":"transparent","o":"#1a1a1a","h":"#2a2a2a","H":"#4a4a5a","s":"#f5d5b5","S":"#d8ad88","g":"#8a6a3a","e":"#2a3a5a","w":"#ffffff","c":"#6b7a8f","C":"#4e5a6c","t":"#a03030"},"rows":["........................","........oooooooo........","......oohhhhhhhhoo......",".....ohhhHhhhhhhhho.....","....ohhhhhhHHhhhhhho....","....ohhHhhhssHhhhhho....","....ohhsssssssshhhho....","....ohssssssssssshho....","....osshhhsssshhhsso....","....osggggssssggggso....","....ogwwegsgsgwwegso....","....osggggssssggggso....","....ossssssSssssssso....",".....osssssssssssso.....",".....osssSoooSsssso.....","......osssssssssso......","........oooooooo........",".........oSSSSo.........","....oocccwwwwwwcccoo....","...occccwwwttwwwcccco...","..occccCcwwttwwcCcccco..","..occccCccwttwccCcccco..",".occcccCcccttcccCccccco.",".occcccCccccCcccCccccco."]}},
+{id:'shimizu_kiyoko',name:'시미즈 키요코',jp:'清水潔子',position:'매니저',number:'',grade:'카라스노 3학년',height:'?',birthday:'1월 6일',voice:'名塚佳織',stats:{power:1,jump:3,stamina:3,strategy:3,technique:3,speed:4},nickname:'키요코 선배',intro:'말수가 적고 침착한 카라스노의 매니저. 중학교 시절 육상 허들 선수였으며, 묵묵히 팀을 뒷바라지한다.',skills:['팀 관리','데이터 기록','응원 현수막 준비'],quote:'힘내.',sprite:{"palette":{".":"transparent","o":"#0a0a14","h":"#141428","H":"#3a3a64","s":"#f8dcc4","S":"#dcb498","g":"#6a6a8a","e":"#2a2a4a","w":"#ffffff","m":"#c06a6a","c":"#1f2a44","a":"#f08a24"},"rows":["........................","........oooooooo........","......oohhhhhhhhoo......",".....ohhhHHhhhhhho......","....ohhhHhhhhhhhhhho....","...ohhhhhhhhhhhhhhhho...","...ohhhhhssssshhhhhho...","...ohhhsssssssssshhho...","...ohhssoossssoosshho...","...ohhgggggssggggghho...","...ohhgweegssgweeghho...","...ohhgggggssggggghho...","...ohhssssssSssssshho...","...ohhsssssssssssshho...","...ohhSsssmmmmsssShho...","...ohhhSssssosssShhho...","...ohhhhoooooooohhhho...","...ohhhhhhoSSohhhhhho...","...ohhhhcccSScccchhho...","..ohhhccccaSSacccchhho..","..ohhcccccaaacccccchho..",".occcccccccaaccccccccco.",".ocacccccccaacccccccaco.",".ocacccccccaacccccccaco."]}},
+{id:'yachi_hitoka',name:'야치 히토카',jp:'谷地仁花',position:'매니저',number:'',grade:'카라스노 1학년',height:'?',birthday:'9월 4일',voice:'諸星すみれ',stats:{power:1,jump:1,stamina:2,strategy:3,technique:2,speed:2},nickname:'야치 양',intro:'겁 많고 소심하지만 디자인 실력이 뛰어난 신입 매니저. 스스로를 마을사람B라 여기다가 팀을 위해 용기를 내는 법을 배운다.',skills:['포스터·홍보 디자인','상대 기록 분석','응원'],quote:'저도 이 팀의 일원이 되고 싶어요!',sprite:{"palette":{".":"transparent","o":"#3a2a10","h":"#f2d24a","H":"#c9a020","s":"#fde0c8","S":"#e8b898","e":"#6a4a2a","w":"#ffffff","m":"#c0605a","p":"#f0a0a0","c":"#22263a","r":"#d04040"},"rows":["........................","........oooooooo........","......oohhhhhhhhoo......",".....ohhhhHhhhhhho......","....ohhHhhhhhhhHhhho....","..ooohhhhhhhhhhhhhho....",".oHHohhhsshhhsshhhho....",".ohhohssssssssssssho....",".oHhosssHssssssHssso....",".ohhossoossssssoosso....",".oHhosweessssssweeso....","..ohosseesssssseesso....","...ooppssssssssssppo....","....osssssmsmmssssso....",".....osssssssssssso.....","......oSssssssssSo......","........oooooooo........",".........oSSSSo.........",".....owwwwSSSSwwwwo.....","....ocwwwwwrrwwwwwco....","...occcwwwrrrrwwwccco...","..occcccwwwrrwwwccccco..","..occccccccwwcccccccco..","..occcccccccccccccccco.."]}},
+{id:'nekomata_yasufumi',name:'네코마타 야스후미',jp:'猫又育史',position:'감독',number:'',grade:'네코마 고교 감독',height:'?',birthday:'?',voice:'?',stats:{power:1,jump:1,stamina:2,strategy:5,technique:3,speed:1},nickname:'네코마타 감독',intro:'네코마의 노장 감독이자 선대 우카이 감독의 오랜 라이벌. 온화한 미소 뒤에 수비 중심의 끈질긴 배구 철학을 지녔다.',skills:['수비 조직','장기 육성','쓰레기장 결전 기획'],quote:'오래 기다린 승부다.',sprite:{"palette":{".":"transparent","o":"#2a1a12","h":"#bdbdbd","H":"#8a8a8a","s":"#ecc9a4","S":"#c99e78","l":"#f8e0c4","e":"#2a2a2a","m":"#7a3a3a","c":"#b8262f","C":"#7e1a20","w":"#ffffff"},"rows":["........................","........oooooooo........","......oossllssssoo......",".....ossllssssssso......","....osssssssssssssso....","....ohhsssssssssshho....","...ohhHssssssssssHhho...","...ohHhhhsssssshhhHho...","...ohHssSSssssSSssHho...","....ossseesssseessso....","....ossessessessesso....","....osSssssSSssssSso....","....ossssssSSsssssso....",".....oSsmmmmmmmmsSo.....",".....osSsmwwwwmsSso.....","......ossSmmmmSsso......","........oooooooo........",".........oSSSSo.........","....oocccwSSSSwcccoo....","...occcccCwSSwCccccco...","..ocwccccccwwccccccwco..","..ocwcccccCwwCcccccwco..",".occwccccccwwccccccwcco.",".occwccccccwwccccccwcco."]}}
+]});
+})();
+
+</script>
+<script>
+(function(){
+const TEAMS=(window.HQ||[]);
+const ALL=[];TEAMS.forEach(t=>(t.chars||[]).forEach(c=>ALL.push(Object.assign({},c,{_t:t}))));
+const STATS=[['power','파워'],['jump','점프'],['stamina','체력'],['strategy','두뇌'],['technique','기술'],['speed','스피드']];
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+let team='all',pos='all',q='';
+
+function drawSprite(cv,sp){
+  const rows=(sp&&sp.rows)||[];const pal=(sp&&sp.palette)||{};
+  const h=rows.length||16,w=rows.reduce((a,r)=>Math.max(a,r.length),0)||16;
+  cv.width=w;cv.height=h;const x=cv.getContext('2d');x.clearRect(0,0,w,h);
+  rows.forEach((r,y)=>{for(let i=0;i<r.length;i++){const col=pal[r[i]];if(col&&col!=='transparent'){x.fillStyle=col;x.fillRect(i,y,1,1);}}});
+}
+function sprite(c,cls){const cv=document.createElement('canvas');if(cls)cv.className=cls;drawSprite(cv,c.sprite);return cv;}
+
+// tabs
+const tabs=$('tabs');
+function mkTab(id,label){const b=document.createElement('button');b.textContent=label;b.dataset.id=id;b.onclick=()=>{team=id;render();};tabs.appendChild(b);}
+mkTab('all','전체');TEAMS.forEach(t=>mkTab(t.id,t.team));
+// positions
+const ps=[...new Set(ALL.map(c=>c.position).filter(Boolean))];
+$('pos').innerHTML='<option value="all">모든 포지션</option>'+ps.map(p=>`<option>${esc(p)}</option>`).join('');
+$('pos').onchange=e=>{pos=e.target.value;render();};
+$('q').oninput=e=>{q=e.target.value.trim().toLowerCase();render();};
+
+function render(){
+  [...tabs.children].forEach(b=>b.classList.toggle('on',b.dataset.id===team));
+  const ti=$('teaminfo');
+  if(team==='all'){
+    ti.innerHTML=`<div class="box teaminfo" style="border-left-color:var(--accent)"><h2>전체 팀 · ${TEAMS.length}개</h2><p style="margin:0">${TEAMS.map(t=>`<span class="chip" style="border-left:8px solid ${esc(t.colors&&t.colors.sub)}">${esc(t.team)} ${t.chars.length}</span>`).join(' ')}</p></div>`;
+  }else{
+    const t=TEAMS.find(x=>x.id===team);const c=t.colors||{};
+    ti.innerHTML=`<div class="box teaminfo" style="border-left-color:${esc(c.sub||c.main)}"><h2>${esc(t.team)}</h2><p style="margin:0">${esc(t.motto||t.intro||'')}</p><p style="margin:6px 0 0;color:var(--muted)">등록 인원 ${t.chars.length}명 · 팀컬러 <span class="chip" style="background:${esc(c.main)};width:20px">&nbsp;</span> <span class="chip" style="background:${esc(c.sub)};width:20px">&nbsp;</span></p></div>`;
+  }
+  const list=ALL.filter(c=>(team==='all'||c._t.id===team)&&(pos==='all'||c.position===pos)&&(!q||[c.name,c.jp,c.position,c.nickname].join(' ').toLowerCase().includes(q)));
+  $('count').textContent=`${list.length}명 표시 중`;
+  const g=$('grid');g.innerHTML='';
+  if(!list.length){g.innerHTML='<p>검색 결과가 없습니다.</p>';return;}
+  list.forEach(c=>{
+    const d=document.createElement('div');d.className='box card';d.tabIndex=0;d.setAttribute('role','button');
+    d.style.borderTopColor=(c._t.colors&&c._t.colors.sub)||'var(--accent)';
+    d.appendChild(sprite(c));
+    d.insertAdjacentHTML('beforeend',`<div class="num">${c.number?'#'+esc(c.number):'—'}</div><div class="nm">${esc(c.name)}</div><span class="chip">${esc(c.position)}</span><div style="font-size:12px;color:var(--muted)">${esc(c._t.team)}</div>`);
+    d.onclick=()=>open(c);d.onkeydown=e=>{if(e.key==='Enter')open(c);};
+    g.appendChild(d);
+  });
+}
+
+function hexSvg(s){
+  const cx=110,cy=100,R=80,pt=(i,r)=>{const a=-Math.PI/2+i*Math.PI/3;return [Math.round(cx+r*Math.cos(a)),Math.round(cy+r*Math.sin(a))];};
+  let o=`<svg class="hex" viewBox="0 0 220 200" shape-rendering="crispEdges">`;
+  for(let l=1;l<=5;l++)o+=`<polygon points="${[0,1,2,3,4,5].map(i=>pt(i,R*l/5).join(',')).join(' ')}" fill="none" stroke="var(--muted)" stroke-width="2" stroke-dasharray="4 4"/>`;
+  o+=`<polygon points="${STATS.map(([k],i)=>pt(i,R*(Math.max(0,Math.min(5,s[k]||0)))/5).join(',')).join(' ')}" fill="var(--accent)" fill-opacity=".55" stroke="var(--accent)" stroke-width="4"/>`;
+  STATS.forEach(([k,l],i)=>{const[x,y]=pt(i,R*(s[k]||0)/5);o+=`<rect x="${x-4}" y="${y-4}" width="8" height="8" fill="var(--ink)"/>`;const[tx,ty]=pt(i,R+14);o+=`<text x="${tx}" y="${ty+4}" text-anchor="middle" font-size="12" fill="var(--ink)" font-family="DotGothic16">${l}</text>`;});
+  return o+'</svg>';
+}
+function open(c){
+  const s=c.stats||{},t=c._t;
+  const rows=[['팀',t.team],['포지션',c.position],['등번호',c.number||'—'],['학년',c.grade],['신장',c.height],['생일',c.birthday],['별명',c.nickname],['일본명',c.jp],['성우',c.voice]];
+  $('mbody').innerHTML=`<button class="close" id="cls" aria-label="닫기">X</button>
+  <div class="mtop"><div id="big"></div><div class="info"><div class="px" style="font-size:12px;color:var(--accent)">${c.number?'#'+esc(c.number):''}</div><h2>${esc(c.name)}</h2>
+  <table>${rows.filter(r=>r[1]).map(r=>`<tr><td>${r[0]}</td><td>${esc(r[1])}</td></tr>`).join('')}</table></div></div>
+  <h3>STATUS</h3><div class="statwrap">${hexSvg(s)}<div>${STATS.map(([k,l])=>`<div class="stat"><span>${l}</span><div class="bar">${[1,2,3,4,5].map(n=>`<i class="${n<=(s[k]||0)?'f':''}"></i>`).join('')}</div><span class="px" style="font-size:10px">${s[k]||0}</span></div>`).join('')}</div></div>
+  <h3>SKILLS</h3><div>${(c.skills||[]).map(k=>`<span class="chip" style="margin:2px">${esc(k)}</span>`).join(' ')||'—'}</div>
+  <h3>QUOTE</h3><blockquote>“${esc(c.quote||'…')}”</blockquote>
+  <h3>PROFILE</h3><p style="margin:0">${esc(c.intro)}</p>`;
+  $('big').appendChild(sprite(c));
+  $('cls').onclick=()=>$('dlg').close();
+  $('dlg').showModal();$('mbody').scrollTop=0;
+}
+$('dlg').addEventListener('click',e=>{if(e.target===$('dlg'))$('dlg').close();});
+$('rand').onclick=()=>{if(ALL.length)open(ALL[Math.floor(Math.random()*ALL.length)]);};
+$('theme').onclick=()=>{const r=document.documentElement;const dark=r.dataset.theme?r.dataset.theme==='dark':matchMedia('(prefers-color-scheme: dark)').matches;r.dataset.theme=dark?'light':'dark';try{localStorage.setItem('hq-theme',r.dataset.theme)}catch(e){}};
+try{const t=localStorage.getItem('hq-theme');if(t)document.documentElement.dataset.theme=t;}catch(e){}
+render();
+})();
+</script>
+</body>
+</html>
